@@ -1,0 +1,10 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# lets the frontend call /api/rsvp instead of the longer
+# /.netlify/functions/rsvp path
+[[redirects]]
+  from = "/api/rsvp"
+  to = "/.netlify/functions/rsvp"
+  status = 200

@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Undangan Metatah</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ephesis&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          maroon: { 950: '#3B0F10', 900: '#4A1315', 800: '#5C1A1B', 600: '#7A2B2A' },
+          cream:  { 100: '#FBF6EC', 200: '#F3E7D0', 300: '#EADFC4' },
+          gold:   { 400: '#C7A55C', 500: '#B08D4F', 600: '#8F6F3A' },
+          blush:  { 300: '#D9B8A3' },
+        },
+        fontFamily: {
+          script: ['Ephesis', 'cursive'],
+          serif: ['"Cormorant Garamond"', 'serif'],
+          sans: ['Poppins', 'sans-serif'],
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body { background-color: #FBF6EC; }
+
+  /* ---------- Falling petals ---------- */
+  #petal-field { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 60; }
+  .petal { position: absolute; top: -8vh; opacity: 0; will-change: transform, opacity;
+    animation-name: fall; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+  @keyframes fall {
+    0%   { transform: translate(0, 0) rotate(0deg);          opacity: 0; }
+    8%   { opacity: 0.85; }
+    25%  { transform: translate(24px, 27vh) rotate(90deg); }
+    50%  { transform: translate(-18px, 52vh) rotate(180deg); }
+    75%  { transform: translate(22px, 78vh) rotate(270deg); }
+    92%  { opacity: 0.8; }
+    100% { transform: translate(-10px, 108vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* ---------- Confetti (RSVP success) ---------- */
+  #confetti-field { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 70; }
+  .confetti-piece { position: absolute; top: -6vh; opacity: 0; will-change: transform, opacity;
+    animation-name: confettiFall; animation-timing-function: cubic-bezier(.36,.1,.6,.95); animation-fill-mode: forwards; }
+  @keyframes confettiFall {
+    0%   { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+    8%   { opacity: 1; }
+    100% { transform: translate(var(--drift, 0px), 105vh) rotate(var(--spin, 720deg)); opacity: 0; }
+  }
+
+  /* ---------- Decorative background shapes ---------- */
+  .shape { position: absolute; pointer-events: none; }
+  .shape-spin      { animation: spinSlow 50s linear infinite; }
+  .shape-spin-rev  { animation: spinSlowRev 65s linear infinite; }
+  .shape-pulse     { animation: pulseZoom 7s ease-in-out infinite; }
+  .shape-pulse-slow{ animation: pulseZoom 11s ease-in-out infinite; }
+  .shape-float     { animation: floatY 8s ease-in-out infinite; }
+  .shape-float-slow{ animation: floatY 12s ease-in-out infinite; }
+  @keyframes spinSlow    { to { transform: rotate(360deg); } }
+  @keyframes spinSlowRev { to { transform: rotate(-360deg); } }
+  @keyframes pulseZoom   { 0%,100% { transform: scale(1); opacity: .35; } 50% { transform: scale(1.18); opacity: .65; } }
+  @keyframes floatY      { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
+
+  /* ---------- Gate ---------- */
+  #gate { transition: transform 1.4s cubic-bezier(0.65, 0, 0.35, 1); }
+  #gate.opened { transform: translateY(-100%); }
+  .gate-fade { animation: gateFade 1.6s ease-out both; }
+  @keyframes gateFade { 0% { opacity: 0; transform: translateY(14px); } 100% { opacity: 1; transform: translateY(0); } }
+
+  /* ---------- Varied scroll-reveal transitions ---------- */
+  .reveal-base {
+    opacity: 0;
+    transition: opacity 1.4s cubic-bezier(.22,1,.36,1), transform 1.4s cubic-bezier(.22,1,.36,1);
+  }
+  .reveal-up    { transform: translateY(34px); }
+  .reveal-down  { transform: translateY(-28px); }
+  .reveal-left  { transform: translateX(-42px); }
+  .reveal-right { transform: translateX(42px); }
+  .reveal-scale { transform: scale(.9); }
+  .reveal-fade  { transform: none; }
+  .reveal-base.in-view { opacity: 1; transform: none; }
+
+  .patra { height: 34px; width: 100%; max-width: 220px; margin: 0 auto; }
+
+  /* ---------- Squiggly patra lines "drawn" left to right ---------- */
+  .patra-line {
+    stroke-dasharray: 260;
+    stroke-dashoffset: 260;
+    transition: stroke-dashoffset 1.8s ease-out;
+    transition-delay: inherit;
+  }
+  .reveal-base.in-view .patra-line { stroke-dashoffset: 0; }
+  .gate-fade .patra-line {
+    animation: drawLine 1.8s ease-out 0.5s forwards;
+  }
+  @keyframes drawLine { from { stroke-dashoffset: 260; } to { stroke-dashoffset: 0; } }
+
+  /* ---------- RSVP messages / list ---------- */
+  .msg-transition {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  .msg-transition.show { opacity: 1; transform: translateY(0); }
+
+  .rsvp-item {
+    opacity: 0;
+    transform: translateY(14px) scale(.97);
+    transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1);
+  }
+  .rsvp-item.show { opacity: 1; transform: translateY(0) scale(1); }
+
+  /* ---------- Scrollable RSVP response list ---------- */
+  .rsvp-scroll {
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: #B08D4F transparent;
+  }
+  .rsvp-scroll::-webkit-scrollbar { width: 6px; }
+  .rsvp-scroll::-webkit-scrollbar-track { background: transparent; }
+  .rsvp-scroll::-webkit-scrollbar-thumb { background-color: rgba(176,141,79,.5); border-radius: 999px; }
+  .rsvp-scroll::-webkit-scrollbar-thumb:hover { background-color: rgba(176,141,79,.8); }
+  .rsvp-fade-edge { transition: opacity .25s ease; }
+
+  /* ---------- RSVP confirmation modal ---------- */
+  #rsvp-modal-card {
+    transition: opacity .5s cubic-bezier(.22,1,.36,1), transform .5s cubic-bezier(.22,1,.36,1);
+  }
+
+  /* ---------- music player ---------- */
+  #music-player{transition:opacity .8s ease, transform .8s ease;}
+  .vinyl{animation:spin 3.2s linear infinite; animation-play-state:paused; box-shadow:0 6px 16px rgba(0,0,0,.35);}
+  .vinyl.spinning{animation-play-state:running;}
+  @keyframes spin{from{transform:rotate(0deg);} to{transform:rotate(360deg);}}
+  #tonearm{transform-origin:34px 6px; transition:transform .7s cubic-bezier(.34,1.4,.64,1);}
+  #mute-toggle, #music-toggle{transition:opacity .7s ease, transform .3s ease;}
+  #music-toggle:active{transform:scale(.94);}
+
+  /* tombol mute beradaptasi dengan latar di belakangnya (mis. footer gelap) agar tetap terlihat */
+  #mute-toggle{transition:background-color .6s ease, border-color .6s ease, color .6s ease, box-shadow .6s ease;}
+  #mute-toggle.on-dark{
+    background-color:rgba(255,255,255,.16);
+    border-color:rgba(255,255,255,.35);
+    color:var(--color-white, #FBF6EC);
+    box-shadow:0 6px 18px rgba(0,0,0,.4);
+  }
+
+  ::selection { background: #B08D4F; color: #FBF6EC; }
+</style>
+</head>
+
+<body class="font-serif text-maroon-950 antialiased">
+
+<div id="petal-field"></div>
+<div id="confetti-field"></div>
+
+<!-- ============ OPENING GATE ============ -->
+<div id="gate" class="fixed inset-0 z-50 bg-maroon-900 flex items-center justify-center px-6 overflow-hidden">
+  <div class="absolute inset-4 md:inset-10 border border-gold-500/40 rounded-sm pointer-events-none"></div>
+  <div class="absolute inset-6 md:inset-14 border border-gold-500/20 rounded-sm pointer-events-none"></div>
+
+  <!-- prominent cute shapes -->
+  <svg class="shape shape-spin -top-12 -left-12 w-48 h-48 text-gold-500/30" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="1" stroke-dasharray="4 6"/></svg>
+  <svg class="shape shape-pulse -bottom-10 -right-10 w-44 h-44 text-blush-300/30" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="1"/></svg>
+  <svg class="shape shape-float top-16 right-8 w-24 h-24 text-gold-400/35" viewBox="0 0 32 32" fill="none"><path d="M16 2c3 5 3 9 0 14-3-5-3-9 0-14Z" fill="currentColor"/><path d="M16 30c-3-5-3-9 0-14 3 5 3 9 0 14Z" fill="currentColor"/><path d="M2 16c5-3 9-3 14 0-5 3-9 3-14 0Z" fill="currentColor"/><path d="M30 16c-5 3-9 3-14 0 5-3 9-3 14 0Z" fill="currentColor"/><circle cx="16" cy="16" r="3" fill="currentColor"/></svg>
+  <svg class="shape shape-spin-rev bottom-20 left-10 w-32 h-32 text-blush-300/25" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="38" stroke="currentColor" stroke-width="1" stroke-dasharray="6 4"/></svg>
+  <svg class="shape shape-pulse-slow top-1/3 left-1/4 w-72 h-72 text-gold-500/10" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="48" stroke="currentColor" stroke-width="0.75"/></svg>
+
+  <div class="relative text-center gate-fade">
+    <p class="font-sans text-[11px] tracking-[0.45em] text-gold-400 uppercase mb-5">Upacara Adat Bali</p>
+
+    <svg class="patra mx-auto mb-4 opacity-70" viewBox="0 0 220 34" fill="none">
+      <path class="patra-line" d="M2 17c14-16 28 16 42 0s28-16 42 0 28 16 42 0 28-16 42 0 28 16 42 0" stroke="#C7A55C" stroke-width="1.2"/>
+      <circle cx="110" cy="17" r="3" fill="#C7A55C"/>
+    </svg>
+
+    <h1 class="font-script text-7xl md:text-8xl text-cream-100 leading-none mb-2 cfg-person-nickname">Ayu Kirana</h1>
+    <p class="font-serif italic text-blush-300 text-lg md:text-xl mb-6">Undangan Metatah</p>
+
+    <div class="mb-8 max-w-xs mx-auto">
+      <p class="font-sans text-xs md:text-sm tracking-wide text-cream-200/90 leading-relaxed">Kepada Yth. Bapak/Ibu/Saudara/i</p>
+      <p id="gate-guest-name" class="font-script text-3xl md:text-4xl text-gold-400 mt-2 leading-tight"></p>
+    </div>
+
+    <button id="open-btn" class="group mx-auto flex flex-col items-center gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 rounded-full p-2">
+      <span class="w-16 h-16 rounded-full border border-gold-400 flex items-center justify-center transition-transform duration-500 group-hover:scale-105 group-active:scale-95">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-gold-400">
+          <path d="M2 6.5C2 5.67 2.67 5 3.5 5h17c.83 0 1.5.67 1.5 1.5v11c0 .83-.67 1.5-1.5 1.5h-17C2.67 18 2 17.33 2 16.5v-10Z" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M3 6.5 12 13l9-6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="font-sans text-[11px] tracking-[0.3em] uppercase text-cream-200/80">Ketuk untuk membuka</span>
+    </button>
+  </div>
+</div>
+
+<!-- ============ MAIN CONTENT ============ -->
+<main>
+
+  <!-- ============ HERO ============ -->
+  <section id="hero" class="min-h-screen flex flex-col items-center justify-center text-center px-6 py-24 relative overflow-hidden">
+    <svg class="shape shape-spin top-10 -left-16 w-52 h-52 text-gold-500/10" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="1" stroke-dasharray="3 7"/></svg>
+    <svg class="shape shape-float bottom-16 -right-10 w-28 h-28 text-blush-300/25" viewBox="0 0 32 32" fill="none"><path d="M16 2c3 5 3 9 0 14-3-5-3-9 0-14Z" fill="currentColor"/><path d="M16 30c-3-5-3-9 0-14 3 5 3 9 0 14Z" fill="currentColor"/><path d="M2 16c5-3 9-3 14 0-5 3-9 3-14 0Z" fill="currentColor"/><path d="M30 16c-5 3-9 3-14 0 5-3 9-3 14 0Z" fill="currentColor"/><circle cx="16" cy="16" r="3" fill="currentColor"/></svg>
+    <svg class="shape shape-pulse-slow top-1/3 right-4 w-16 h-16 text-gold-500/20" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="30" stroke="currentColor" stroke-width="1.5"/></svg>
+    <svg class="shape shape-spin-rev bottom-1/4 left-10 w-20 h-20 text-maroon-800/10" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="36" stroke="currentColor" stroke-width="1" stroke-dasharray="3 5"/></svg>
+
+    <p id="greeting-line" class="reveal-base reveal-up font-serif italic text-maroon-600 text-base md:text-lg mb-8 max-w-md" data-delay="0">
+      Anda telah diundang dalam prosesi metatah suci
+    </p>
+
+    <p class="reveal-base reveal-fade font-sans text-[11px] tracking-[0.4em] uppercase text-gold-600 mb-4" data-delay="80">Om Swastyastu</p>
+
+    <p class="reveal-base reveal-up font-serif text-maroon-800 max-w-lg leading-relaxed mb-8" data-delay="160">
+      Dengan penuh syukur ke hadapan Ida Sang Hyang Widhi Wasa, kami sekeluarga
+      bermaksud menyelenggarakan upacara Mesangih / Metatah bagi putri kami.
+      Kami mengundang Bapak/Ibu/Saudara/i untuk berkenan hadir memberikan doa restu.
+    </p>
+
+    <svg class="patra mb-8 reveal-base reveal-scale" data-delay="220" viewBox="0 0 220 34" fill="none">
+      <path class="patra-line" d="M2 17c14-16 28 16 42 0s28-16 42 0 28 16 42 0 28-16 42 0 28 16 42 0" stroke="#B08D4F" stroke-width="1.2"/>
+      <circle cx="110" cy="17" r="3" fill="#B08D4F"/>
+    </svg>
+
+    <h2 class="reveal-base reveal-scale font-script text-6xl md:text-8xl text-maroon-900 mb-3 cfg-person-nickname" data-delay="260">Ayu Kirana</h2>
+    <p class="reveal-base reveal-up font-sans text-sm tracking-wide text-maroon-600 mb-10" data-delay="320">
+      Putri dari <span class="cfg-parents">I Wayan Sudiarta &amp; Ni Ketut Sri Wahyuni</span>
+    </p>
+
+    <div class="reveal-base reveal-left inline-flex items-center gap-3 border border-gold-500/50 rounded-full px-6 py-3 mb-10" data-delay="380">
+      <span class="font-sans text-xs tracking-[0.2em] uppercase text-maroon-800 cfg-event-date">Minggu, 16 Agustus 2026</span>
+    </div>
+
+    <!-- Countdown -->
+    <div class="reveal-base reveal-right grid grid-cols-4 gap-3 md:gap-5" data-delay="440">
+      <div class="bg-cream-200/70 border border-gold-500/30 rounded-xl px-4 py-3 md:px-6 md:py-4">
+        <p id="cd-days" class="font-serif text-2xl md:text-3xl text-maroon-900">00</p>
+        <p class="font-sans text-[9px] tracking-[0.2em] uppercase text-maroon-700 mt-1">Hari</p>
+      </div>
+      <div class="bg-cream-200/70 border border-gold-500/30 rounded-xl px-4 py-3 md:px-6 md:py-4">
+        <p id="cd-hours" class="font-serif text-2xl md:text-3xl text-maroon-900">00</p>
+        <p class="font-sans text-[9px] tracking-[0.2em] uppercase text-maroon-700 mt-1">Jam</p>
+      </div>
+      <div class="bg-cream-200/70 border border-gold-500/30 rounded-xl px-4 py-3 md:px-6 md:py-4">
+        <p id="cd-minutes" class="font-serif text-2xl md:text-3xl text-maroon-900">00</p>
+        <p class="font-sans text-[9px] tracking-[0.2em] uppercase text-maroon-700 mt-1">Menit</p>
+      </div>
+      <div class="bg-cream-200/70 border border-gold-500/30 rounded-xl px-4 py-3 md:px-6 md:py-4">
+        <p id="cd-seconds" class="font-serif text-2xl md:text-3xl text-maroon-900">00</p>
+        <p class="font-sans text-[9px] tracking-[0.2em] uppercase text-maroon-700 mt-1">Detik</p>
+      </div>
+    </div>
+
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-gold-500">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </div>
+  </section>
+
+  <!-- ============ QUOTE ============ -->
+  <section id="makna" class="bg-maroon-900 text-cream-100 px-6 py-24 relative overflow-hidden">
+    <svg class="shape shape-spin-rev -top-14 right-6 w-44 h-44 text-gold-400/10" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="currentColor" stroke-width="1" stroke-dasharray="2 8"/></svg>
+    <svg class="shape shape-float-slow bottom-8 left-8 w-20 h-20 text-cream-100/10" viewBox="0 0 32 32" fill="none"><path d="M16 2c3 5 3 9 0 14-3-5-3-9 0-14Z" fill="currentColor"/><path d="M16 30c-3-5-3-9 0-14 3 5 3 9 0 14Z" fill="currentColor"/><path d="M2 16c5-3 9-3 14 0-5 3-9 3-14 0Z" fill="currentColor"/><path d="M30 16c-5 3-9 3-14 0 5-3 9-3 14 0Z" fill="currentColor"/><circle cx="16" cy="16" r="3" fill="currentColor"/></svg>
+    <svg class="shape shape-pulse top-6 left-6 w-16 h-16 text-gold-400/15" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="30" stroke="currentColor" stroke-width="1"/></svg>
+
+    <div class="max-w-2xl mx-auto text-center relative">
+      <p class="reveal-base reveal-scale font-script text-4xl md:text-5xl text-gold-400 mb-8">Makna Metatah</p>
+      <svg class="reveal-base reveal-fade patra mb-8 opacity-60" data-delay="120" viewBox="0 0 220 34" fill="none">
+        <path class="patra-line" d="M2 17c14-16 28 16 42 0s28-16 42 0 28 16 42 0 28-16 42 0 28 16 42 0" stroke="#C7A55C" stroke-width="1.2"/>
+      </svg>
+      <p class="reveal-base reveal-up font-serif italic text-lg md:text-xl leading-loose text-cream-200" data-delay="200">
+        Enam mata pisau tak kasat mata bersemayam dalam diri manusia —
+        nafsu, tamak, angkara, mabuk kuasa, khilaf, dan iri hati.
+        Melalui metatah, keenamnya diruncingkan menjadi enam gigi yang diratakan,
+        sebagai simbol kesediaan menaklukkan Sad Ripu dan melangkah menuju
+        kedewasaan yang hening.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ PERSON ============ -->
+  <section id="mempelai" class="px-6 py-24 relative overflow-hidden">
+    <svg class="shape shape-pulse top-6 left-6 w-24 h-24 text-gold-500/15" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="34" stroke="currentColor" stroke-width="1.5"/></svg>
+    <svg class="shape shape-spin bottom-0 -right-12 w-40 h-40 text-blush-300/20" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="1" stroke-dasharray="5 5"/></svg>
+    <svg class="shape shape-float-slow top-1/2 right-4 w-16 h-16 text-blush-300/25" viewBox="0 0 32 32" fill="none"><path d="M16 2c3 5 3 9 0 14-3-5-3-9 0-14Z" fill="currentColor"/><path d="M16 30c-3-5-3-9 0-14 3 5 3 9 0 14Z" fill="currentColor"/><path d="M2 16c5-3 9-3 14 0-5 3-9 3-14 0Z" fill="currentColor"/><path d="M30 16c-5 3-9 3-14 0 5-3 9-3 14 0Z" fill="currentColor"/><circle cx="16" cy="16" r="3" fill="currentColor"/></svg>
+
+    <div class="max-w-md mx-auto text-center relative">
+      <p class="reveal-base reveal-down font-script text-4xl md:text-5xl text-maroon-900 mb-2">Yang Menjalani Upacara</p>
+      <p class="reveal-base reveal-fade font-sans text-xs tracking-[0.3em] uppercase text-gold-600 mb-12" data-delay="100">Sang Pinunas Restu</p>
+
+      <div class="reveal-base reveal-scale bg-cream-200 rounded-2xl border border-gold-500/30 px-8 py-12" data-delay="180">
+        <div class="w-28 h-28 mx-auto rounded-full bg-maroon-800/10 border border-gold-500/40 flex items-center justify-center mb-6">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" class="text-maroon-800/50">
+            <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.3"/>
+            <path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 class="font-script text-5xl text-maroon-900 mb-3 cfg-person-full">Ni Made Ayu Kirana</h3>
+        <p class="font-serif text-maroon-700 leading-relaxed mb-6">
+          <span class="cfg-person-desc">Putri kedua dari</span><br>
+          <span class="cfg-parents">I Wayan Sudiarta &amp; Ni Ketut Sri Wahyuni</span>
+        </p>
+
+        <a id="instagram-link" href="https://instagram.com" target="_blank" rel="noopener"
+           class="inline-flex items-center gap-2 font-sans text-xs tracking-[0.15em] uppercase text-maroon-800 border border-gold-500/40 rounded-full px-4 py-2 hover:bg-maroon-900 hover:text-cream-100 transition-colors">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="17.2" cy="6.8" r="1" fill="currentColor"/>
+          </svg>
+          <span class="cfg-instagram-handle">@ayukirana</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EVENT ============ -->
+  <section id="acara" class="bg-cream-200/60 px-6 py-24 relative overflow-hidden">
+    <svg class="shape shape-float top-10 right-10 w-24 h-24 text-gold-500/20" viewBox="0 0 32 32" fill="none"><path d="M16 2c3 5 3 9 0 14-3-5-3-9 0-14Z" fill="currentColor"/><path d="M16 30c-3-5-3-9 0-14 3 5 3 9 0 14Z" fill="currentColor"/><path d="M2 16c5-3 9-3 14 0-5 3-9 3-14 0Z" fill="currentColor"/><path d="M30 16c-5 3-9 3-14 0 5-3 9-3 14 0Z" fill="currentColor"/><circle cx="16" cy="16" r="3" fill="currentColor"/></svg>
+    <svg class="shape shape-spin-rev bottom-0 -left-10 w-36 h-36 text-maroon-800/10" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="currentColor" stroke-width="1" stroke-dasharray="3 6"/></svg>
+    <svg class="shape shape-pulse-slow top-1/2 right-6 w-16 h-16 text-gold-500/15" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="28" stroke="currentColor" stroke-width="1.2"/></svg>
+
+    <div class="max-w-3xl mx-auto text-center relative">
+      <p class="reveal-base reveal-up font-script text-4xl md:text-5xl text-maroon-900 mb-2">Rangkaian Acara</p>
+      <p class="reveal-base reveal-fade font-sans text-xs tracking-[0.3em] uppercase text-gold-600 mb-14 cfg-event-date" data-delay="100">Minggu, 16 Agustus 2026</p>
+
+      <div class="grid md:grid-cols-2 gap-6 text-center">
+        <div class="reveal-base reveal-left bg-cream-100 rounded-2xl border border-gold-500/30 p-8" data-delay="160">
+          <p class="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-600 mb-3 cfg-ceremony-label">Prosesi Sakral</p>
+          <h4 class="font-serif text-xl font-medium text-maroon-900 mb-4 cfg-ceremony-title">Upacara Mesangih</h4>
+          <ul class="font-serif text-maroon-700 space-y-2 text-sm mb-6">
+            <li class="cfg-ceremony-time">Pukul 08.00 WITA — selesai</li>
+            <li class="cfg-ceremony-venue">Jro / Merajan Keluarga Sudiarta</li>
+            <li class="cfg-ceremony-address">Jl. Tukad Yeh Aya No. 21, Denpasar</li>
+          </ul>
+
+          <div class="rounded-xl overflow-hidden border border-gold-500/30 shadow-sm">
+            <iframe id="map-embed-ceremony" src="https://www.google.com/maps?q=Denpasar,Bali&output=embed"
+              width="100%" height="200" style="border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
+          <a id="map-link-btn-ceremony" href="https://maps.google.com/?q=Denpasar,Bali" target="_blank" rel="noopener"
+             class="inline-flex items-center gap-2 mt-4 font-sans text-[10px] tracking-[0.2em] uppercase
+                    text-maroon-800 border border-gold-500/40 rounded-full px-4 py-2 hover:bg-maroon-900 hover:text-cream-100 transition-colors">
+            Buka di Google Maps
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+        <div class="reveal-base reveal-right bg-cream-100 rounded-2xl border border-gold-500/30 p-8" data-delay="220">
+          <p class="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-600 mb-3 cfg-reception-label">Ramah Tamah</p>
+          <h4 class="font-serif text-xl font-medium text-maroon-900 mb-4 cfg-reception-title">Syukuran &amp; Santap Bersama</h4>
+          <ul class="font-serif text-maroon-700 space-y-2 text-sm mb-6">
+            <li class="cfg-reception-time">Pukul 11.00 — 14.00 WITA</li>
+            <li class="cfg-reception-venue">Bale Banjar Sudiarta, Denpasar</li>
+            <li class="cfg-reception-dresscode">Busana adat madya</li>
+          </ul>
+
+          <div class="rounded-xl overflow-hidden border border-gold-500/30 shadow-sm">
+            <iframe id="map-embed-reception" src="https://www.google.com/maps?q=Denpasar,Bali&output=embed"
+              width="100%" height="200" style="border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
+          <a id="map-link-btn-reception" href="https://maps.google.com/?q=Denpasar,Bali" target="_blank" rel="noopener"
+             class="inline-flex items-center gap-2 mt-4 font-sans text-[10px] tracking-[0.2em] uppercase
+                    text-maroon-800 border border-gold-500/40 rounded-full px-4 py-2 hover:bg-maroon-900 hover:text-cream-100 transition-colors">
+            Buka di Google Maps
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RSVP ============ -->
+  <section id="rsvp" class="px-6 py-24 relative overflow-hidden">
+    <svg class="shape shape-pulse-slow top-8 left-10 w-20 h-20 text-gold-500/15" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="30" stroke="currentColor" stroke-width="1.5"/></svg>
+    <svg class="shape shape-float bottom-10 right-6 w-24 h-24 text-blush-300/20" viewBox="0 0 32 32" fill="none"><path d="M16 2c3 5 3 9 0 14-3-5-3-9 0-14Z" fill="currentColor"/><path d="M16 30c-3-5-3-9 0-14 3 5 3 9 0 14Z" fill="currentColor"/><path d="M2 16c5-3 9-3 14 0-5 3-9 3-14 0Z" fill="currentColor"/><path d="M30 16c-5 3-9 3-14 0 5-3 9-3 14 0Z" fill="currentColor"/><circle cx="16" cy="16" r="3" fill="currentColor"/></svg>
+    <svg class="shape shape-spin top-1/3 right-10 w-16 h-16 text-gold-400/20" viewBox="0 0 32 32" fill="none"><path d="M16 2c3 5 3 9 0 14-3-5-3-9 0-14Z" fill="currentColor"/><path d="M16 30c-3-5-3-9 0-14 3 5 3 9 0 14Z" fill="currentColor"/><path d="M2 16c5-3 9-3 14 0-5 3-9 3-14 0Z" fill="currentColor"/><path d="M30 16c-5 3-9 3-14 0 5-3 9-3 14 0Z" fill="currentColor"/><circle cx="16" cy="16" r="3" fill="currentColor"/></svg>
+
+    <div class="max-w-lg mx-auto text-center relative">
+      <p class="reveal-base reveal-up font-script text-4xl md:text-5xl text-maroon-900 mb-2">Konfirmasi Kehadiran</p>
+      <p class="reveal-base reveal-fade font-serif text-maroon-700 mb-10" data-delay="100">
+        Mohon konfirmasi kehadiran Bapak/Ibu/Saudara/i sebelum tanggal <span class="cfg-rsvp-deadline">9 Agustus 2026</span>.
+      </p>
+
+      <form id="rsvp-form" novalidate class="reveal-base reveal-scale text-left space-y-5" data-delay="180">
+        <div>
+          <label for="nama" class="block font-sans text-[11px] tracking-[0.2em] uppercase text-maroon-800 mb-2">Nama Lengkap</label>
+          <input id="nama" type="text" placeholder="Nama Anda"
+            class="w-full bg-cream-200/60 border border-gold-500/30 rounded-lg px-4 py-3 font-serif
+                   text-maroon-900 placeholder-maroon-700/40 focus:outline-none focus:ring-2 focus:ring-gold-400">
+        </div>
+
+        <div>
+          <label for="konfirmasi" class="block font-sans text-[11px] tracking-[0.2em] uppercase text-maroon-800 mb-2">Konfirmasi Kehadiran</label>
+          <select id="konfirmasi"
+            class="w-full bg-cream-200/60 border border-gold-500/30 rounded-lg px-4 py-3 font-serif
+                   text-maroon-900 focus:outline-none focus:ring-2 focus:ring-gold-400">
+            <option>Hadir</option>
+            <option>Tidak Hadir</option>
+            <option>Masih Ragu</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="pesan" class="block font-sans text-[11px] tracking-[0.2em] uppercase text-maroon-800 mb-2">Doa &amp; Ucapan</label>
+          <textarea id="pesan" rows="3" placeholder="Tuliskan doa restu Anda"
+            class="w-full bg-cream-200/60 border border-gold-500/30 rounded-lg px-4 py-3 font-serif
+                   text-maroon-900 placeholder-maroon-700/40 focus:outline-none focus:ring-2 focus:ring-gold-400"></textarea>
+        </div>
+
+        <button type="submit"
+          class="w-full bg-maroon-900 text-cream-100 font-sans text-xs tracking-[0.25em] uppercase
+                 rounded-full py-4 hover:bg-maroon-800 transition-colors">
+          Kirim Konfirmasi
+        </button>
+      </form>
+
+      <p id="rsvp-error" class="hidden msg-transition font-serif text-maroon-800 mt-5 bg-blush-300/30 border border-maroon-600/40 rounded-lg px-4 py-3"></p>
+
+      <!-- DEV ONLY — remove this button (and #rsvp-seed-btn in the script) before sharing the invitation for real -->
+      <button id="rsvp-seed-btn" type="button"
+        class="mt-6 font-sans text-[10px] tracking-[0.15em] uppercase border border-dashed border-maroon-600/40 text-maroon-700/70 rounded-full px-4 py-2 hover:bg-maroon-900/5 transition-colors">
+        Isi 20 Data Uji (Dev)
+      </button>
+
+      <div class="reveal-base reveal-up mt-10" data-delay="60">
+        <div class="relative">
+          <div id="rsvp-list" class="rsvp-scroll max-h-[26rem] overflow-y-auto space-y-4 text-left pr-2 py-1"></div>
+          <div id="rsvp-fade-top" class="rsvp-fade-edge pointer-events-none absolute top-0 inset-x-0 h-10 bg-gradient-to-b from-cream-100 to-transparent" style="opacity:0"></div>
+          <div id="rsvp-fade-bottom" class="rsvp-fade-edge pointer-events-none absolute bottom-0 inset-x-0 h-10 bg-gradient-to-t from-cream-100 to-transparent" style="opacity:0"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GIFT ============ -->
+  <section id="hadiah" class="bg-maroon-900 text-cream-100 px-6 py-24 relative overflow-hidden">
+    <svg class="shape shape-spin -bottom-16 -right-10 w-48 h-48 text-gold-400/10" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="1" stroke-dasharray="4 6"/></svg>
+    <svg class="shape shape-pulse top-10 left-8 w-20 h-20 text-cream-100/10" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="30" stroke="currentColor" stroke-width="1.5"/></svg>
+    <svg class="shape shape-float-slow bottom-1/3 left-1/4 w-16 h-16 text-blush-300/20" viewBox="0 0 32 32" fill="none"><path d="M16 2c3 5 3 9 0 14-3-5-3-9 0-14Z" fill="currentColor"/><path d="M16 30c-3-5-3-9 0-14 3 5 3 9 0 14Z" fill="currentColor"/><path d="M2 16c5-3 9-3 14 0-5 3-9 3-14 0Z" fill="currentColor"/><path d="M30 16c-5 3-9 3-14 0 5-3 9-3 14 0Z" fill="currentColor"/><circle cx="16" cy="16" r="3" fill="currentColor"/></svg>
+
+    <div class="max-w-lg mx-auto text-center relative">
+      <p class="reveal-base reveal-scale font-script text-4xl md:text-5xl text-gold-400 mb-6">Tanda Kasih</p>
+      <p class="reveal-base reveal-up font-serif text-cream-200 leading-relaxed mb-10" data-delay="120">
+        Kehadiran serta doa restu Bapak/Ibu/Saudara/i merupakan hadiah yang
+        paling berarti bagi kami. Namun apabila berkenan memberikan tanda kasih,
+        dapat disalurkan melalui:
+      </p>
+
+      <div class="space-y-4 text-left">
+        <div class="reveal-base reveal-left bg-maroon-800/60 border border-gold-500/30 rounded-xl px-6 py-5 flex items-center justify-between gap-4" data-delay="180">
+          <div>
+            <p class="font-sans text-[10px] tracking-[0.2em] uppercase text-gold-400 mb-1">Transfer Bank — <span class="cfg-bank-name">BCA</span></p>
+            <p class="font-serif text-cream-100">a.n. <span class="cfg-bank-account-name">Ni Ketut Sri Wahyuni</span></p>
+            <p class="font-serif tracking-wider text-cream-100 cfg-bank-account-number">1234567890</p>
+          </div>
+          <button id="copy-bank-btn" data-copy="1234567890"
+            class="copy-btn shrink-0 font-sans text-[10px] tracking-[0.15em] uppercase border border-gold-400
+                   text-gold-400 rounded-full px-4 py-2 hover:bg-gold-400 hover:text-maroon-900 transition-colors">
+            Salin
+          </button>
+        </div>
+
+        <div class="reveal-base reveal-right bg-maroon-800/60 border border-gold-500/30 rounded-xl px-6 py-5 flex items-center justify-between gap-4" data-delay="240">
+          <div>
+            <p class="font-sans text-[10px] tracking-[0.2em] uppercase text-gold-400 mb-1">Alamat Kado</p>
+            <p class="font-serif text-cream-100 cfg-gift-address">Jl. Tukad Yeh Aya No. 21, Denpasar, Bali</p>
+          </div>
+          <button id="copy-address-btn" data-copy="Jl. Tukad Yeh Aya No. 21, Denpasar, Bali"
+            class="copy-btn shrink-0 font-sans text-[10px] tracking-[0.15em] uppercase border border-gold-400
+                   text-gold-400 rounded-full px-4 py-2 hover:bg-gold-400 hover:text-maroon-900 transition-colors">
+            Salin
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="px-6 py-16 text-center relative overflow-hidden">
+    <svg class="patra mb-6 opacity-60 reveal-base reveal-fade" data-delay="0" viewBox="0 0 220 34" fill="none">
+      <path class="patra-line" d="M2 17c14-16 28 16 42 0s28-16 42 0 28 16 42 0 28-16 42 0 28 16 42 0" stroke="#B08D4F" stroke-width="1.2"/>
+    </svg>
+    <p class="reveal-base reveal-up font-serif italic text-maroon-700 mb-2" data-delay="140">Terima kasih atas doa restu Bapak/Ibu/Saudara/i</p>
+    <p class="reveal-base reveal-scale font-script text-3xl text-maroon-900" data-delay="240">Om Shanti Shanti Shanti Om</p>
+  </footer>
+
+</main>
+
+<!-- ============ RSVP CONFIRMATION MODAL ============ -->
+<div id="rsvp-modal" class="hidden fixed inset-0 z-[80] flex items-center justify-center px-6">
+  <div id="rsvp-modal-backdrop" class="absolute inset-0 bg-maroon-950/70 backdrop-blur-sm"></div>
+  <div id="rsvp-modal-card" class="relative bg-cream-100 rounded-2xl border border-gold-500/30 max-w-sm w-full px-8 py-10 text-center shadow-2xl transform scale-95 opacity-0">
+    <svg class="patra mb-5 mx-auto opacity-70" viewBox="0 0 220 34" fill="none">
+      <path d="M2 17c14-16 28 16 42 0s28-16 42 0 28 16 42 0 28-16 42 0 28 16 42 0" stroke="#B08D4F" stroke-width="1.2"/>
+      <circle cx="110" cy="17" r="3" fill="#B08D4F"/>
+    </svg>
+    <p id="rsvp-modal-text" class="font-serif italic text-maroon-800 leading-relaxed mb-7"></p>
+    <button id="rsvp-modal-close"
+      class="font-sans text-xs tracking-[0.25em] uppercase bg-maroon-900 text-cream-100 rounded-full px-6 py-3 hover:bg-maroon-800 transition-colors">
+      Tutup
+    </button>
+  </div>
+</div>
+
+<!-- =========================================================
+     PEMUTAR MUSIK (mengambang, kanan bawah)
+     ========================================================= -->
+<div id="music-player" class="fixed bottom-5 right-5 z-40 flex items-center gap-3 opacity-0 pointer-events-none">
+  <button id="mute-toggle" aria-label="Bisukan musik" class="w-9 h-9 rounded-full bg-cream-100/95 backdrop-blur shadow-lg border border-maroon-900/15 flex items-center justify-center text-maroon-900 shrink-0">
+    <svg id="icon-vol-on" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4h4l5 5V5L7 10H3z"/><path d="M14.5 4.97v2.06c2.89 1.02 5 3.78 5 6.97s-2.11 5.95-5 6.97v2.06c4.01-1.06 7-4.7 7-9.03s-2.99-7.97-7-9.03z"/><path d="M16.5 12c0-1.77-.77-3.29-2-4.24v8.48c1.23-.95 2-2.47 2-4.24z"/></svg>
+    <svg id="icon-vol-off" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" class="hidden"><path d="M3 10v4h4l5 5V5L7 10H3z"/><path d="M19.07 4.93l-1.41 1.41A9 9 0 0 1 21 12a9 9 0 0 1-3.34 7.66l1.41 1.41A11 11 0 0 0 23 12a11 11 0 0 0-3.93-7.07z"/><path d="M16.5 12a4.5 4.5 0 0 0-1.35-3.22L14 9.93a3 3 0 0 1 0 4.14l1.15 1.15A4.5 4.5 0 0 0 16.5 12z"/></svg>
+  </button>
+
+  <button id="music-toggle" aria-label="Putar / Jeda musik" class="relative w-14 h-14 shrink-0 group">
+    <svg id="tonearm" class="absolute -top-1 -right-1 w-7 h-7 z-10" style="transform:rotate(-30deg);" viewBox="0 0 40 40" aria-hidden="true">
+      <circle cx="34" cy="6" r="4" fill="#C7A55C"/>
+      <line x1="34" y1="6" x2="11" y2="29" stroke="#C7A55C" stroke-width="2.4" stroke-linecap="round"/>
+      <circle cx="11" cy="29" r="2" fill="#C7A55C"/>
+    </svg>
+    <div id="vinyl" class="vinyl absolute inset-0 rounded-full" style="background:repeating-radial-gradient(circle at center, #2a2a2a 0, #2a2a2a 2px, #1a1a1a 2px, #1a1a1a 4px);">
+      <div class="absolute inset-0 m-auto w-6 h-6 rounded-full bg-[#C7A55C] flex items-center justify-center border-2 border-[#1a1a1a]">
+        <span class="font-script text-[10px] text-white leading-none">A K</span>
+      </div>
+    </div>
+    <span class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+      <svg id="icon-play" width="16" height="16" viewBox="0 0 24 24" fill="white" style="filter:drop-shadow(0 1px 2px rgba(0,0,0,.6));"><path d="M8 5v14l11-7z"/></svg>
+      <svg id="icon-pause" width="16" height="16" viewBox="0 0 24 24" fill="white" class="hidden" style="filter:drop-shadow(0 1px 2px rgba(0,0,0,.6));"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+    </span>
+  </button>
+</div>
+
+<audio id="bg-audio" loop preload="none">
+  <!-- Ganti "audio/lagu-pernikahan.mp3" dengan file lagu pilihan Anda -->
+  <source src="audio/Teddy Swims - You're Still The One (Shania Twain Cover).mp3" type="audio/mpeg">
+</audio>
+
+<script>
+  /* =========================================================================
+     CONFIG — edit everything about the invitation here. Nothing else in this
+     file needs to change; the values below are applied to the page on load.
+  ========================================================================= */
+  const CONFIG = {
+    // The person undergoing the ceremony
+    personFullName: "Ni Made Ayu Kirana",     // full name shown on the person card
+    personNickname: "Ayu Kirana",             // short name shown on cover & hero (large script)
+    personDesc: "Putri kedua dari",           // relation label, e.g. "Putri kedua dari"
+    parents: "I Wayan Sudiarta & Ni Ketut Sri Wahyuni",
+    instagramHandle: "@ayukirana",
+    instagramUrl: "https://instagram.com/ayukirana",
+
+    // Main event date/time
+    eventDateDisplay: "Minggu, 16 Agustus 2026",  // shown as text on the page
+    eventDateISO: "2026-08-16T08:00:00+08:00",    // used to drive the countdown — keep in ISO format
+
+    // RSVP deadline (display text only)
+    rsvpDeadline: "9 Agustus 2026",
+
+    // Sacred ceremony
+    ceremony: {
+      label: "Prosesi Sakral",
+      title: "Upacara Mesangih",
+      time: "Pukul 08.00 WITA — selesai",
+      venue: "Jro / Merajan Keluarga Sudiarta",
+      address: "Jl. Tukad Yeh Aya No. 21, Denpasar",
+      // Google Maps for THIS venue — paste your own embed URL and share link
+      mapEmbedUrl: "https://www.google.com/maps?q=Denpasar,Bali&output=embed",
+      mapLinkUrl: "https://maps.google.com/?q=Denpasar,Bali",
+    },
+
+    // Reception / open gathering
+    reception: {
+      label: "Ramah Tamah",
+      title: "Syukuran & Santap Bersama",
+      time: "Pukul 11.00 — 14.00 WITA",
+      venue: "Bale Banjar Sudiarta, Denpasar",
+      dresscode: "Busana adat madya",
+      // Google Maps for THIS venue — paste your own embed URL and share link
+      mapEmbedUrl: "https://www.google.com/maps?q=Denpasar,Bali&output=embed",
+      mapLinkUrl: "https://maps.google.com/?q=Denpasar,Bali",
+    },
+
+    // Bank transfer for gifts
+    bank: {
+      bankName: "BCA",
+      accountName: "Ni Ketut Sri Wahyuni",
+      accountNumber: "1234567890",
+    },
+    giftAddress: "Jl. Tukad Yeh Aya No. 21, Denpasar, Bali",
+
+    // Default greeting text on the gate when no ?to= is given
+    defaultGuestName: "Tamu Undangan",
+  };
+
+  function applyConfig(cfg) {
+    document.title = "Undangan Metatah — " + cfg.personNickname;
+
+    document.querySelectorAll('.cfg-person-nickname').forEach(el => el.textContent = cfg.personNickname);
+    document.querySelectorAll('.cfg-person-full').forEach(el => el.textContent = cfg.personFullName);
+    document.querySelectorAll('.cfg-person-desc').forEach(el => el.textContent = cfg.personDesc);
+    document.querySelectorAll('.cfg-parents').forEach(el => el.textContent = cfg.parents);
+    document.querySelectorAll('.cfg-instagram-handle').forEach(el => el.textContent = cfg.instagramHandle);
+    const igLink = document.getElementById('instagram-link');
+    if (igLink) igLink.href = cfg.instagramUrl;
+
+    document.querySelectorAll('.cfg-event-date').forEach(el => el.textContent = cfg.eventDateDisplay);
+    document.querySelectorAll('.cfg-rsvp-deadline').forEach(el => el.textContent = cfg.rsvpDeadline);
+
+    document.querySelectorAll('.cfg-ceremony-label').forEach(el => el.textContent = cfg.ceremony.label);
+    document.querySelectorAll('.cfg-ceremony-title').forEach(el => el.textContent = cfg.ceremony.title);
+    document.querySelectorAll('.cfg-ceremony-time').forEach(el => el.textContent = cfg.ceremony.time);
+    document.querySelectorAll('.cfg-ceremony-venue').forEach(el => el.textContent = cfg.ceremony.venue);
+    document.querySelectorAll('.cfg-ceremony-address').forEach(el => el.textContent = cfg.ceremony.address);
+
+    document.querySelectorAll('.cfg-reception-label').forEach(el => el.textContent = cfg.reception.label);
+    document.querySelectorAll('.cfg-reception-title').forEach(el => el.textContent = cfg.reception.title);
+    document.querySelectorAll('.cfg-reception-time').forEach(el => el.textContent = cfg.reception.time);
+    document.querySelectorAll('.cfg-reception-venue').forEach(el => el.textContent = cfg.reception.venue);
+    document.querySelectorAll('.cfg-reception-dresscode').forEach(el => el.textContent = cfg.reception.dresscode);
+
+    const ceremonyMapEmbed = document.getElementById('map-embed-ceremony');
+    if (ceremonyMapEmbed) ceremonyMapEmbed.src = cfg.ceremony.mapEmbedUrl;
+    const ceremonyMapBtn = document.getElementById('map-link-btn-ceremony');
+    if (ceremonyMapBtn) ceremonyMapBtn.href = cfg.ceremony.mapLinkUrl;
+
+    const receptionMapEmbed = document.getElementById('map-embed-reception');
+    if (receptionMapEmbed) receptionMapEmbed.src = cfg.reception.mapEmbedUrl;
+    const receptionMapBtn = document.getElementById('map-link-btn-reception');
+    if (receptionMapBtn) receptionMapBtn.href = cfg.reception.mapLinkUrl;
+
+    document.querySelectorAll('.cfg-bank-name').forEach(el => el.textContent = cfg.bank.bankName);
+    document.querySelectorAll('.cfg-bank-account-name').forEach(el => el.textContent = cfg.bank.accountName);
+    document.querySelectorAll('.cfg-bank-account-number').forEach(el => el.textContent = cfg.bank.accountNumber);
+    document.querySelectorAll('.cfg-gift-address').forEach(el => el.textContent = cfg.giftAddress);
+
+    const copyBank = document.getElementById('copy-bank-btn');
+    if (copyBank) copyBank.setAttribute('data-copy', cfg.bank.accountNumber);
+    const copyAddress = document.getElementById('copy-address-btn');
+    if (copyAddress) copyAddress.setAttribute('data-copy', cfg.giftAddress);
+
+    startCountdown(cfg.eventDateISO);
+    applyGuestName(cfg.defaultGuestName);
+  }
+
+  // ---------- Guest name from ?to= query param ----------
+  function capitalizeWords(str) {
+    return str
+      .split(' ')
+      .filter(Boolean)
+      .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(' ');
+  }
+
+  function applyGuestName(defaultName) {
+    // URLSearchParams decodes "+" as a space (application/x-www-form-urlencoded),
+    // so "?to=person+name" is read correctly as "person name".
+    const params = new URLSearchParams(window.location.search);
+    const raw = params.get('to');
+    const guestName = (raw && raw.trim()) ? capitalizeWords(raw.trim()) : defaultName;
+    const guestNameEl = document.getElementById('gate-guest-name');
+    if (guestNameEl) {
+      guestNameEl.textContent = guestName;
+    }
+  }
+
+  // ---------- Countdown ----------
+  function startCountdown(targetISO) {
+    const target = new Date(targetISO).getTime();
+    const dEl = document.getElementById('cd-days');
+    const hEl = document.getElementById('cd-hours');
+    const mEl = document.getElementById('cd-minutes');
+    const sEl = document.getElementById('cd-seconds');
+
+    function tick() {
+      let diff = target - Date.now();
+      if (diff < 0) diff = 0;
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      dEl.textContent = String(d).padStart(2, '0');
+      hEl.textContent = String(h).padStart(2, '0');
+      mEl.textContent = String(m).padStart(2, '0');
+      sEl.textContent = String(s).padStart(2, '0');
+    }
+    tick();
+    setInterval(tick, 1000);
+  }
+
+  // ---------- Petals ----------
+  const petalField = document.getElementById('petal-field');
+  const petalSvg = `
+    <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
+      <path d="M16 2c3 5 3 9 0 14-3-5-3-9 0-14Z" fill="currentColor"/>
+      <path d="M16 30c-3-5-3-9 0-14 3 5 3 9 0 14Z" fill="currentColor"/>
+      <path d="M2 16c5-3 9-3 14 0-5 3-9 3-14 0Z" fill="currentColor"/>
+      <path d="M30 16c-5 3-9 3-14 0 5-3 9-3 14 0Z" fill="currentColor"/>
+      <circle cx="16" cy="16" r="3" fill="currentColor"/>
+    </svg>`;
+  const petalColors = ['#D9B8A3', '#C7A55C', '#F3E7D0'];
+
+  function spawnPetals(count) {
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement('div');
+      el.className = 'petal';
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.color = petalColors[Math.floor(Math.random() * petalColors.length)];
+      const size = 14 + Math.random() * 14;
+      el.style.width = size + 'px';
+      el.style.height = size + 'px';
+      el.style.animationDuration = (10 + Math.random() * 8) + 's';
+      el.style.animationDelay = (Math.random() * 14) + 's';
+      el.innerHTML = petalSvg;
+      petalField.appendChild(el);
+    }
+  }
+  spawnPetals(14);
+
+  // ---------- Confetti ----------
+  const confettiField = document.getElementById('confetti-field');
+  const confettiColors = ['#C7A55C', '#B08D4F', '#7A2B2A', '#D9B8A3', '#F3E7D0'];
+
+  function burstConfetti(count = 70) {
+    for (let i = 0; i < count; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      const size = 6 + Math.random() * 8;
+      piece.style.width = size + 'px';
+      piece.style.height = (size * 0.4 + 4) + 'px';
+      piece.style.left = Math.random() * 100 + 'vw';
+      piece.style.background = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+      piece.style.borderRadius = Math.random() > 0.5 ? '2px' : '50%';
+      piece.style.setProperty('--drift', (Math.random() * 160 - 80) + 'px');
+      piece.style.setProperty('--spin', (600 + Math.random() * 600) + 'deg');
+      piece.style.animationDuration = (2.2 + Math.random() * 1.4) + 's';
+      piece.style.animationDelay = (Math.random() * 0.3) + 's';
+      confettiField.appendChild(piece);
+      setTimeout(() => piece.remove(), 4200);
+    }
+  }
+
+  // ---------- Music player ----------
+  const musicPlayer = document.getElementById('music-player');
+  const bgAudio = document.getElementById('bg-audio');
+  const musicToggle = document.getElementById('music-toggle');
+  const muteToggle = document.getElementById('mute-toggle');
+  const vinyl = document.getElementById('vinyl');
+  const tonearm = document.getElementById('tonearm');
+  const iconPlay = document.getElementById('icon-play');
+  const iconPause = document.getElementById('icon-pause');
+  const iconVolOn = document.getElementById('icon-vol-on');
+  const iconVolOff = document.getElementById('icon-vol-off');
+
+  let isPlaying = false;
+
+  function showMusicPlayer() {
+    musicPlayer.classList.remove('opacity-0', 'pointer-events-none');
+    musicPlayer.classList.add('opacity-100');
+  }
+
+  function playMusic() {
+    bgAudio.play().then(() => {
+      isPlaying = true;
+      vinyl.classList.add('spinning');
+      tonearm.style.transform = 'rotate(-8deg)';
+      iconPlay.classList.add('hidden');
+      iconPause.classList.remove('hidden');
+    }).catch(() => {
+      // Autoplay may be blocked — leave the player paused, user can tap to start it.
+      isPlaying = false;
+    });
+  }
+
+  function pauseMusic() {
+    bgAudio.pause();
+    isPlaying = false;
+    vinyl.classList.remove('spinning');
+    tonearm.style.transform = 'rotate(-30deg)';
+    iconPlay.classList.remove('hidden');
+    iconPause.classList.add('hidden');
+  }
+
+  musicToggle.addEventListener('click', () => {
+    if (isPlaying) pauseMusic(); else playMusic();
+  });
+
+  muteToggle.addEventListener('click', () => {
+    bgAudio.muted = !bgAudio.muted;
+    iconVolOn.classList.toggle('hidden', bgAudio.muted);
+    iconVolOff.classList.toggle('hidden', !bgAudio.muted);
+  });
+
+  // Adapt the mute button's contrast when it floats over a dark (maroon) section.
+  function updateMuteContrast() {
+    const checkY = window.innerHeight - 50;
+    const darkSections = document.querySelectorAll('.bg-maroon-900');
+    let onDark = false;
+    darkSections.forEach(sec => {
+      const r = sec.getBoundingClientRect();
+      if (r.top <= checkY && r.bottom >= checkY) onDark = true;
+    });
+    muteToggle.classList.toggle('on-dark', onDark);
+  }
+  window.addEventListener('scroll', () => requestAnimationFrame(updateMuteContrast));
+  window.addEventListener('resize', () => requestAnimationFrame(updateMuteContrast));
+
+  // ---------- Gate open (hero reveal waits for the gate slide-up to finish) ----------
+  const gate = document.getElementById('gate');
+  const openBtn = document.getElementById('open-btn');
+
+  let gateHasOpened = false;
+  let revealObserver = null;
+
+  function startReveal() {
+    const revealEls = document.querySelectorAll('.reveal-base');
+    revealEls.forEach(el => {
+      const delay = el.getAttribute('data-delay');
+      if (delay) el.style.transitionDelay = delay + 'ms';
+    });
+    revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('in-view');
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(el => revealObserver.observe(el));
+  }
+
+  function finishGateOpen() {
+    if (gateHasOpened) return;
+    gateHasOpened = true;
+    gate.style.display = 'none';
+    startReveal();
+  }
+
+  openBtn.addEventListener('click', () => {
+    gate.classList.add('opened');
+    showMusicPlayer();
+    playMusic();
+    updateMuteContrast();
+    document.body.style.overflow = 'auto';
+    // Fallback in case transitionend doesn't fire (e.g. reduced-motion settings)
+    setTimeout(finishGateOpen, 1600);
+  });
+
+  document.body.style.overflow = 'hidden';
+
+  // ---------- RSVP confirmation modal ----------
+  const rsvpModal = document.getElementById('rsvp-modal');
+  const rsvpModalCard = document.getElementById('rsvp-modal-card');
+  const rsvpModalText = document.getElementById('rsvp-modal-text');
+  const rsvpModalClose = document.getElementById('rsvp-modal-close');
+  const rsvpModalBackdrop = document.getElementById('rsvp-modal-backdrop');
+
+  const RSVP_MESSAGES = {
+    'Hadir': 'Ucapan dan konfirmasi kehadiran sudah kami terima, untuk kehadirannya kami ucapkan terima kasih.',
+    'Tidak Hadir': 'Ucapan dan konfirmasi Anda sudah kami terima. Terima kasih atas kabarnya — doa restu Anda tetap sangat berarti bagi kami.',
+    'Masih Ragu': 'Ucapan dan konfirmasi Anda sudah kami terima. Terima kasih, kami tunggu kabar baik mengenai kehadiran Anda selanjutnya.',
+  };
+
+  function openRsvpModal(status) {
+    rsvpModalText.textContent = RSVP_MESSAGES[status] || RSVP_MESSAGES['Hadir'];
+    rsvpModal.classList.remove('hidden');
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      rsvpModalCard.classList.remove('scale-95', 'opacity-0');
+      rsvpModalCard.classList.add('scale-100', 'opacity-100');
+    }));
+  }
+
+  function closeRsvpModal() {
+    rsvpModalCard.classList.remove('scale-100', 'opacity-100');
+    rsvpModalCard.classList.add('scale-95', 'opacity-0');
+    setTimeout(() => {
+      rsvpModal.classList.add('hidden');
+      // Confetti now bursts once the modal is out of the way, on the page
+      // itself, instead of behind/under the modal where it was hard to see.
+      burstConfetti(70);
+    }, 400);
+  }
+
+  rsvpModalClose.addEventListener('click', closeRsvpModal);
+  rsvpModalBackdrop.addEventListener('click', closeRsvpModal);
+
+  // ---------- RSVP form ----------
+  const rsvpForm = document.getElementById('rsvp-form');
+  const rsvpError = document.getElementById('rsvp-error');
+  const rsvpList = document.getElementById('rsvp-list');
+
+  // ---------- Top/bottom fade only shows on the side there's more to scroll ----------
+  const rsvpFadeTop = document.getElementById('rsvp-fade-top');
+  const rsvpFadeBottom = document.getElementById('rsvp-fade-bottom');
+
+  function updateRsvpFade() {
+    if (!rsvpList || !rsvpFadeTop || !rsvpFadeBottom) return;
+    const { scrollTop, scrollHeight, clientHeight } = rsvpList;
+    const scrollable = scrollHeight > clientHeight + 1;
+    const atTop = scrollTop <= 1;
+    const atBottom = scrollHeight - scrollTop - clientHeight <= 1;
+    rsvpFadeTop.style.opacity = (!scrollable || atTop) ? '0' : '1';
+    rsvpFadeBottom.style.opacity = (!scrollable || atBottom) ? '0' : '1';
+  }
+
+  if (rsvpList) {
+    rsvpList.addEventListener('scroll', updateRsvpFade, { passive: true });
+    window.addEventListener('resize', updateRsvpFade);
+    // Re-check whenever items are added/removed (form submits, seeding, initial load)
+    new MutationObserver(updateRsvpFade).observe(rsvpList, { childList: true });
+    updateRsvpFade();
+  }
+
+  // ---------- Shared RSVP storage, via the Netlify Function proxy ----------
+  // The browser never talks to jsonbin.io directly (and never sees the master
+  // key) — it calls /api/rsvp, which netlify.toml redirects to
+  // netlify/functions/rsvp.js. That function holds JSONBIN_API_KEY /
+  // JSONBIN_BIN_ID as server-side env vars and does the actual jsonbin.io call.
+  const RSVP_API_URL = '/api/rsvp';
+
+  /** Push one new RSVP entry via the Netlify function. Throws on failure. */
+  async function saveRsvpEntry(entry) {
+    const res = await fetch(RSVP_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || ('Gagal menyimpan RSVP (' + res.status + ')'));
+    }
+    return res.json();
+  }
+
+  /** Load every previously-saved RSVP from the function and render the list. */
+  async function loadRsvpsFromBin() {
+    try {
+      const res = await fetch(RSVP_API_URL);
+      if (!res.ok) return; // e.g. function not deployed yet / opened as a local file
+      const data = await res.json();
+      const rsvps = Array.isArray(data.rsvps) ? data.rsvps : [];
+      // Oldest first, so prepend-per-item ends with the newest entry on top.
+      rsvps.forEach(entry => renderSubmission(entry));
+    } catch (err) {
+      console.error('Gagal memuat data RSVP:', err);
+    }
+  }
+
+  /**
+   * DEV-ONLY helper: pushes 20 generated sample RSVPs into the shared bin so
+   * you can see how the list/avatars look with real data. Call it once from
+   * the browser console (seedTestRsvps()) or tap the "Isi Data Uji" button
+   * below the form — then remove the button (and this block, if you like)
+   * before sharing the invitation for real.
+   */
+  const SEED_NAMES = [
+    'Made Ayu Lestari', 'Kadek Wira Saputra', 'Komang Dewi Anjani', 'Wayan Putra Wijaya',
+    'Ni Luh Sri Utami', 'I Gede Bagus Arimbawa', 'Putu Ratna Sari', 'Ida Bagus Oka Wirawan',
+    'Ni Made Suartini', 'Anak Agung Ngurah Wibawa', 'Kadek Ayu Trisna', 'I Wayan Dharma Putra',
+    'Luh Gede Novianti', 'Made Bagiada', 'Ni Kadek Sinta Dewi', 'I Ketut Sudira',
+    'Gusti Ayu Kartika', 'I Made Yudha Pratama', 'Ni Wayan Puspa Ningsih', 'Komang Adi Saputra',
+  ];
+  const SEED_MESSAGES = [
+    'Selamat menempuh upacara metatah, semoga lancar dan penuh berkah.',
+    'Turut berbahagia, semoga acaranya berjalan lancar dari awal hingga akhir.',
+    'Om Swastyastu, kami doakan yang terbaik untuk acara metatahnya.',
+    'Semoga sehat selalu dan diberikan kelancaran dalam prosesi nanti.',
+    '',
+    'Maaf lahir batin, semoga acaranya berjalan khidmat dan lancar.',
+    'Senang bisa ikut mendoakan dari jauh, semoga semua lancar.',
+    '',
+  ];
+  const SEED_STATUSES = ['Hadir', 'Hadir', 'Hadir', 'Tidak Hadir', 'Masih Ragu'];
+
+  function generateSeedRsvps(count = 20) {
+    const entries = [];
+    const now = Date.now();
+    for (let i = 0; i < count; i++) {
+      const nama = SEED_NAMES[i % SEED_NAMES.length];
+      const konfirmasi = SEED_STATUSES[Math.floor(Math.random() * SEED_STATUSES.length)];
+      const pesan = SEED_MESSAGES[Math.floor(Math.random() * SEED_MESSAGES.length)];
+      const waktuMs = now - Math.floor(Math.random() * 6 * 86400000); // spread over the last ~6 days
+      entries.push({
+        nama,
+        pesan,
+        konfirmasi,
+        waktu: new Date(waktuMs).toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' }),
+        waktuISO: new Date(waktuMs).toISOString(),
+      });
+    }
+    // Oldest first, matching how real submissions accumulate.
+    entries.sort((a, b) => new Date(a.waktuISO) - new Date(b.waktuISO));
+    return entries;
+  }
+
+  async function seedTestRsvps() {
+    const seedData = generateSeedRsvps(20);
+    // Posted one at a time (not in parallel) so the function's optimistic-
+    // concurrency retries don't all collide with each other.
+    for (const entry of seedData) {
+      await saveRsvpEntry(entry);
+    }
+    rsvpList.innerHTML = '';
+    await loadRsvpsFromBin();
+  }
+  window.seedTestRsvps = seedTestRsvps;
+
+  const seedBtn = document.getElementById('rsvp-seed-btn');
+  if (seedBtn) {
+    seedBtn.addEventListener('click', async () => {
+      seedBtn.disabled = true;
+      seedBtn.textContent = 'Mengisi data uji...';
+      try {
+        await seedTestRsvps();
+      } catch (err) {
+        console.error(err);
+        alert('Gagal mengisi data uji: ' + err.message);
+      } finally {
+        seedBtn.disabled = false;
+        seedBtn.textContent = 'Isi 20 Data Uji (Dev)';
+      }
+    });
+  }
+
+  function escapeHTML(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ---------- Auto-generated avatars (initials on a colored circle) ----------
+  // Palette kept inside the invitation's own gold/maroon/blush family so
+  // avatars never clash with the page, while still landing on a different
+  // color per guest (deterministic per-name, so a person keeps the same
+  // color if the list is reloaded).
+  const AVATAR_COLORS = [
+    '#7A2B2A', '#B08D4F', '#5C1A1B', '#8F6F3A', '#D9B8A3',
+    '#4A1315', '#C7A55C', '#3B0F10', '#9C6B4F', '#6B4A2A',
+  ];
+
+  function hashString(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = (hash << 5) - hash + str.charCodeAt(i);
+      hash |= 0;
+    }
+    return Math.abs(hash);
+  }
+
+  function getInitials(name) {
+    const words = name.trim().split(/\s+/).filter(Boolean);
+    if (words.length === 0) return '?';
+    if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+    return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+  }
+
+  function avatarHTML(name) {
+    const h = hashString(name);
+    const color = AVATAR_COLORS[h % AVATAR_COLORS.length];
+    const initials = escapeHTML(getInitials(name));
+    return '<div class="shrink-0 w-11 h-11 rounded-full flex items-center justify-center font-sans text-xs font-semibold text-cream-100" ' +
+      'style="background-color:' + color + '">' + initials + '</div>';
+  }
+
+  // entry = { nama, pesan, konfirmasi, waktu } — raw (unescaped) text in, HTML-escaped here.
+  function renderSubmission(entry, { prepend = true } = {}) {
+    const card = document.createElement('div');
+    card.className = 'rsvp-item bg-cream-200/70 border border-gold-500/30 rounded-xl px-5 py-4';
+    const statusClasses = entry.konfirmasi === 'Hadir'
+      ? 'text-maroon-900 bg-gold-400/30'
+      : entry.konfirmasi === 'Tidak Hadir'
+        ? 'text-maroon-900 bg-blush-300/40'
+        : 'text-maroon-900 bg-cream-300';
+    const namaSafe = escapeHTML(entry.nama);
+    const pesanSafe = escapeHTML(entry.pesan || '');
+    card.innerHTML =
+      '<div class="flex items-start gap-3">' +
+        avatarHTML(entry.nama) +
+        '<div class="min-w-0 flex-1">' +
+          '<div class="flex items-start justify-between gap-3 mb-2">' +
+            '<p class="font-serif font-medium text-maroon-900 truncate">' + namaSafe + '</p>' +
+            '<span class="shrink-0 font-sans text-[10px] tracking-[0.15em] uppercase rounded-full px-3 py-1 ' + statusClasses + '">' + entry.konfirmasi + '</span>' +
+          '</div>' +
+          (pesanSafe ? '<p class="font-serif text-sm text-maroon-700 italic mb-2">&ldquo;' + pesanSafe + '&rdquo;</p>' : '') +
+          '<p class="font-sans text-[10px] tracking-wide text-maroon-600">' + entry.waktu + '</p>' +
+        '</div>' +
+      '</div>';
+    if (prepend) rsvpList.prepend(card); else rsvpList.appendChild(card);
+    requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add('show')));
+  }
+
+  // Tracks each element's pending "add hidden after fade-out" timer so a new
+  // showMsg() call can cancel it — otherwise a stale hide from an earlier
+  // call could fire moments after a new message was shown, making it look
+  // like the message flashed briefly and disappeared.
+  const msgHideTimers = new WeakMap();
+
+  function showMsg(el, hide) {
+    const pendingHide = msgHideTimers.get(el);
+    if (pendingHide) {
+      clearTimeout(pendingHide);
+      msgHideTimers.delete(el);
+    }
+    if (!hide) {
+      el.classList.remove('hidden');
+      requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
+    } else {
+      el.classList.remove('show');
+      const timer = setTimeout(() => el.classList.add('hidden'), 650);
+      msgHideTimers.set(el, timer);
+    }
+  }
+
+  const rsvpSubmitBtn = rsvpForm.querySelector('button[type="submit"]');
+
+  rsvpForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    showMsg(rsvpError, true);
+
+    const nama = document.getElementById('nama').value.trim();
+    const konfirmasi = document.getElementById('konfirmasi').value;
+    const pesan = document.getElementById('pesan').value.trim();
+
+    if (!nama) {
+      rsvpError.textContent = 'Mohon isi nama lengkap Anda sebelum mengirim konfirmasi.';
+      showMsg(rsvpError, false);
+      return;
+    }
+
+    const waktu = new Date().toLocaleString('id-ID', { dateStyle: 'long', timeStyle: 'short' });
+    const entry = { nama, pesan, konfirmasi, waktu, waktuISO: new Date().toISOString() };
+
+    const originalLabel = rsvpSubmitBtn.textContent;
+    rsvpSubmitBtn.disabled = true;
+    rsvpSubmitBtn.textContent = 'Mengirim...';
+
+    try {
+      await saveRsvpEntry(entry);
+      renderSubmission(entry);
+      openRsvpModal(konfirmasi); // confetti fires once the modal is closed, so it's clearly visible
+      rsvpForm.reset();
+    } catch (err) {
+      console.error('Gagal menyimpan RSVP:', err);
+      rsvpError.textContent = 'Konfirmasi gagal terkirim (koneksi bermasalah). Silakan coba lagi.';
+      showMsg(rsvpError, false);
+    } finally {
+      rsvpSubmitBtn.disabled = false;
+      rsvpSubmitBtn.textContent = originalLabel;
+    }
+  });
+
+  // ---------- Copy buttons ----------
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const text = btn.getAttribute('data-copy');
+      try {
+        await navigator.clipboard.writeText(text);
+        const original = btn.textContent;
+        btn.textContent = 'Tersalin';
+        setTimeout(() => { btn.textContent = original; }, 1800);
+      } catch (err) {
+        alert('Gagal menyalin, silakan salin manual: ' + text);
+      }
+    });
+  });
+
+  // ---------- Boot ----------
+  applyConfig(CONFIG);
+  loadRsvpsFromBin();
+</script>
+
+</body>
+</html>
