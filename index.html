@@ -60,12 +60,12 @@
 
   /* ---------- Decorative background shapes ---------- */
   .shape { position: absolute; pointer-events: none; }
-  .shape-spin      { animation: spinSlow 50s linear infinite; }
-  .shape-spin-rev  { animation: spinSlowRev 65s linear infinite; }
-  .shape-pulse     { animation: pulseZoom 7s ease-in-out infinite; }
-  .shape-pulse-slow{ animation: pulseZoom 11s ease-in-out infinite; }
-  .shape-float     { animation: floatY 8s ease-in-out infinite; }
-  .shape-float-slow{ animation: floatY 12s ease-in-out infinite; }
+  .shape-spin      { animation: spinSlow 10s linear infinite; }
+  .shape-spin-rev  { animation: spinSlowRev 10s linear infinite; }
+  .shape-pulse     { animation: pulseZoom 3s ease-in-out infinite; }
+  .shape-pulse-slow{ animation: pulseZoom 5s ease-in-out infinite; }
+  .shape-float     { animation: floatY 3s ease-in-out infinite; }
+  .shape-float-slow{ animation: floatY 5s ease-in-out infinite; }
   @keyframes spinSlow    { to { transform: rotate(360deg); } }
   @keyframes spinSlowRev { to { transform: rotate(-360deg); } }
   @keyframes pulseZoom   { 0%,100% { transform: scale(1); opacity: .35; } 50% { transform: scale(1.18); opacity: .65; } }
@@ -156,10 +156,34 @@
   }
 
   ::selection { background: #B08D4F; color: #FBF6EC; }
+
+  /* ============ LOADING SCREEN — shown until the page is ready ============ */
+  #loading-screen {
+    position: fixed; inset: 0; z-index: 80; /* above gate(50)/petals(60)/confetti(70) */
+    background: #4A1315;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.1rem;
+    transition: opacity .6s ease, visibility .6s ease;
+  }
+  #loading-screen.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+  .loading-ring {
+    width: 40px; height: 40px; border-radius: 9999px;
+    border: 2px solid rgba(199,165,92,.25);
+    border-top-color: #C7A55C;
+    animation: loadingSpin .9s linear infinite;
+  }
+  @keyframes loadingSpin { to { transform: rotate(360deg); } }
 </style>
 </head>
 
 <body class="font-serif text-maroon-950 antialiased">
+
+<!-- ============ LOADING SCREEN ============ -->
+<!-- Covers the page until fonts/images/audio/config JS have finished loading,
+     so guests never see an unstyled flash or an unfinished gate. -->
+<div id="loading-screen">
+  <div class="loading-ring"></div>
+  <p class="font-sans text-[10px] tracking-[0.4em] uppercase text-gold-400/80">Memuat undangan...</p>
+</div>
 
 <div id="petal-field"></div>
 <div id="confetti-field"></div>
@@ -425,10 +449,10 @@
       <p id="rsvp-error" class="hidden msg-transition font-serif text-maroon-800 mt-5 bg-blush-300/30 border border-maroon-600/40 rounded-lg px-4 py-3"></p>
 
       <!-- DEV ONLY — remove this button (and #rsvp-seed-btn in the script) before sharing the invitation for real -->
-      <!-- <button id="rsvp-seed-btn" type="button"
+      <button id="rsvp-seed-btn" type="button"
         class="mt-6 font-sans text-[10px] tracking-[0.15em] uppercase border border-dashed border-maroon-600/40 text-maroon-700/70 rounded-full px-4 py-2 hover:bg-maroon-900/5 transition-colors">
         Isi 20 Data Uji (Dev)
-      </button> -->
+      </button>
 
       <div class="reveal-base reveal-up mt-10" data-delay="60">
         <div class="relative">
@@ -515,8 +539,8 @@
      ========================================================= -->
 <div id="music-player" class="fixed bottom-5 right-5 z-40 flex items-center gap-3 opacity-0 pointer-events-none">
   <button id="mute-toggle" aria-label="Bisukan musik" class="w-9 h-9 rounded-full bg-cream-100/95 backdrop-blur shadow-lg border border-maroon-900/15 flex items-center justify-center text-maroon-900 shrink-0">
-    <svg id="icon-vol-on" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4h4l5 5V5L7 10H3z"/><path d="M14.5 4.97v2.06c2.89 1.02 5 3.78 5 6.97s-2.11 5.95-5 6.97v2.06c4.01-1.06 7-4.7 7-9.03s-2.99-7.97-7-9.03z"/><path d="M16.5 12c0-1.77-.77-3.29-2-4.24v8.48c1.23-.95 2-2.47 2-4.24z"/></svg>
-    <svg id="icon-vol-off" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" class="hidden"><path d="M3 10v4h4l5 5V5L7 10H3z"/><path d="M19.07 4.93l-1.41 1.41A9 9 0 0 1 21 12a9 9 0 0 1-3.34 7.66l1.41 1.41A11 11 0 0 0 23 12a11 11 0 0 0-3.93-7.07z"/><path d="M16.5 12a4.5 4.5 0 0 0-1.35-3.22L14 9.93a3 3 0 0 1 0 4.14l1.15 1.15A4.5 4.5 0 0 0 16.5 12z"/></svg>
+    <svg id="icon-vol-on" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 0 0 1.5 12c0 .898.121 1.768.348 2.595.341 1.24 1.518 1.905 2.659 1.905h1.93l4.5 4.5c.945.945 2.561.276 2.561-1.06V4.06ZM18.584 5.106a.75.75 0 0 1 1.06 0c3.808 3.807 3.808 9.98 0 13.788a.75.75 0 0 1-1.06-1.06 8.25 8.25 0 0 0 0-11.668.75.75 0 0 1 0-1.06Z"/><path d="M15.932 7.757a.75.75 0 0 1 1.061 0 6 6 0 0 1 0 8.486.75.75 0 0 1-1.06-1.061 4.5 4.5 0 0 0 0-6.364.75.75 0 0 1 0-1.06Z"/></svg>
+    <svg id="icon-vol-off" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" class="hidden"><path d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 0 0 1.5 12c0 .898.121 1.768.348 2.595.341 1.24 1.518 1.905 2.659 1.905h1.93l4.5 4.5c.945.945 2.561.276 2.561-1.06V4.06ZM17.78 9.22a.75.75 0 1 0-1.06 1.06L18.44 12l-1.72 1.72a.75.75 0 0 0 1.06 1.06L19.5 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L20.56 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L19.5 10.94l-1.72-1.72Z"/></svg>
   </button>
 
   <button id="music-toggle" aria-label="Putar / Jeda musik" class="relative w-14 h-14 shrink-0 group">
@@ -539,8 +563,11 @@
 
 <audio id="bg-audio" loop preload="none">
   <!-- Ganti "audio/lagu-pernikahan.mp3" dengan file lagu pilihan Anda -->
-  <source src="audio/Teddy Swims - You're Still The One (Shania Twain Cover).mp3" type="audio/mpeg">
+  <source src="audio/Rihanna - We Found Love ft. Calvin Harris.mp3" type="audio/mpeg">
 </audio>
+
+<!-- Only exercised when CONFIG.env === 'dev' (see below) — harmless to load otherwise -->
+<script src="jsonbin-browser.js"></script>
 
 <script>
   /* =========================================================================
@@ -597,6 +624,23 @@
 
     // Default greeting text on the gate when no ?to= is given
     defaultGuestName: "Tamu Undangan",
+
+    // ---- Environment toggle ----
+    // 'dev'  -> RSVP form talks to jsonbin.io directly via jsonbin-browser.js
+    //           (fast local testing with `npx serve` / opening the file, no
+    //           Netlify function needed — but ships the master key to the
+    //           browser, so only ever use a throwaway/test bin here).
+    // 'prod' -> RSVP form talks to the Netlify function at /api/rsvp, which
+    //           keeps the real jsonbin.io master key server-side. Also hides
+    //           the "Isi 20 Data Uji (Dev)" button.
+    env: "prod",
+
+    // Only used when env === 'dev'. Get a Master Key at
+    // https://jsonbin.io/api-keys and create a bin with starting content {}.
+    jsonbin: {
+      // apiKey: "YOUR_JSONBIN_MASTER_KEY",
+      // binId: "YOUR_JSONBIN_BIN_ID",
+    },
   };
 
   function applyConfig(cfg) {
@@ -914,15 +958,38 @@
     updateRsvpFade();
   }
 
-  // ---------- Shared RSVP storage, via the Netlify Function proxy ----------
-  // The browser never talks to jsonbin.io directly (and never sees the master
-  // key) — it calls /api/rsvp, which netlify.toml redirects to
-  // netlify/functions/rsvp.js. That function holds JSONBIN_API_KEY /
-  // JSONBIN_BIN_ID as server-side env vars and does the actual jsonbin.io call.
+  // ---------- Shared RSVP storage — dev talks to jsonbin.io directly,     ----------
+  // ---------- prod goes through the Netlify function proxy at /api/rsvp  ----------
+  // In prod the browser never sees the jsonbin.io master key — the function
+  // (netlify/functions/rsvp.js) holds JSONBIN_API_KEY / JSONBIN_BIN_ID as
+  // server-side env vars and does the actual jsonbin.io call. Dev mode is
+  // for quick local testing without deploying a function; it ships whatever
+  // key you put in CONFIG.jsonbin to the browser, so use a throwaway bin.
   const RSVP_API_URL = '/api/rsvp';
+  const isDev = CONFIG.env === 'dev';
 
-  /** Push one new RSVP entry via the Netlify function. Throws on failure. */
+  const jsonbinConfigured =
+    isDev && CONFIG.jsonbin &&
+    CONFIG.jsonbin.apiKey && CONFIG.jsonbin.apiKey !== 'YOUR_JSONBIN_MASTER_KEY' &&
+    CONFIG.jsonbin.binId && CONFIG.jsonbin.binId !== 'YOUR_JSONBIN_BIN_ID';
+
+  const jsonbinClient = jsonbinConfigured ? new JSONBinClient({ apiKey: CONFIG.jsonbin.apiKey }) : null;
+
+  /** Push one new RSVP entry into shared storage. Throws on failure. */
   async function saveRsvpEntry(entry) {
+    if (isDev) {
+      if (!jsonbinClient) {
+        console.warn('CONFIG.env is "dev" but CONFIG.jsonbin.apiKey/binId are not set — RSVP not saved.');
+        return;
+      }
+      await jsonbinClient.update(CONFIG.jsonbin.binId, (current) => {
+        const rsvps = Array.isArray(current.rsvps) ? current.rsvps : [];
+        rsvps.push(entry);
+        return { rsvps };
+      });
+      return;
+    }
+
     const res = await fetch(RSVP_API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -935,8 +1002,20 @@
     return res.json();
   }
 
-  /** Load every previously-saved RSVP from the function and render the list. */
+  /** Load every previously-saved RSVP from shared storage and render the list. */
   async function loadRsvpsFromBin() {
+    if (isDev) {
+      if (!jsonbinClient) return;
+      try {
+        const res = await jsonbinClient.readBin(CONFIG.jsonbin.binId);
+        const rsvps = Array.isArray(res.record?.rsvps) ? res.record.rsvps : [];
+        rsvps.forEach(entry => renderSubmission(entry));
+      } catch (err) {
+        console.error('Gagal memuat data RSVP:', err);
+      }
+      return;
+    }
+
     try {
       const res = await fetch(RSVP_API_URL);
       if (!res.ok) return; // e.g. function not deployed yet / opened as a local file
@@ -1010,19 +1089,23 @@
 
   const seedBtn = document.getElementById('rsvp-seed-btn');
   if (seedBtn) {
-    seedBtn.addEventListener('click', async () => {
-      seedBtn.disabled = true;
-      seedBtn.textContent = 'Mengisi data uji...';
-      try {
-        await seedTestRsvps();
-      } catch (err) {
-        console.error(err);
-        alert('Gagal mengisi data uji: ' + err.message);
-      } finally {
-        seedBtn.disabled = false;
-        seedBtn.textContent = 'Isi 20 Data Uji (Dev)';
-      }
-    });
+    if (!isDev) {
+      seedBtn.remove(); // prod: no dev-only affordances in the real invitation
+    } else {
+      seedBtn.addEventListener('click', async () => {
+        seedBtn.disabled = true;
+        seedBtn.textContent = 'Mengisi data uji...';
+        try {
+          await seedTestRsvps();
+        } catch (err) {
+          console.error(err);
+          alert('Gagal mengisi data uji: ' + err.message);
+        } finally {
+          seedBtn.disabled = false;
+          seedBtn.textContent = 'Isi 20 Data Uji (Dev)';
+        }
+      });
+    }
   }
 
   function escapeHTML(str) {
@@ -1171,6 +1254,25 @@
   // ---------- Boot ----------
   applyConfig(CONFIG);
   loadRsvpsFromBin();
+
+  // ---------- Loading screen ----------
+  // Hide once everything (fonts, images, CSS) has actually loaded, so the
+  // gate never appears half-rendered. `window.load` fires after all
+  // resources finish (the audio tag uses preload="none" so it never blocks
+  // this). A safety-net timeout hides it regardless after 6s in case some
+  // resource stalls.
+  function hideLoadingScreen() {
+    const el = document.getElementById('loading-screen');
+    if (!el) return;
+    el.classList.add('is-hidden');
+    setTimeout(() => el.remove(), 700);
+  }
+  if (document.readyState === 'complete') {
+    hideLoadingScreen();
+  } else {
+    window.addEventListener('load', hideLoadingScreen);
+  }
+  setTimeout(hideLoadingScreen, 6000);
 </script>
 
 </body>
