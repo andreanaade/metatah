@@ -618,15 +618,14 @@
     // 'prod' -> RSVP form talks to the Netlify function at /api/rsvp, which
     //           keeps the real jsonbin.io master key server-side. Also hides
     //           the "Isi 20 Data Uji (Dev)" button.
-    env: "dev",
+    env: "prod",
 
     // Only used when env === 'dev'. Get a Master Key at
     // https://jsonbin.io/api-keys and create a bin with starting content {}.
     jsonbin: {
       // apiKey: "YOUR_JSONBIN_MASTER_KEY",
       // binId: "YOUR_JSONBIN_BIN_ID",
-      apiKey: "$2a$10$kq/Be0t/6nU/5rQZcjBanuaG821d5KC.0.u4hX8pJgqEnZolSlMni",
-      binId: "6a5a24a9f5f4af5e299c4ffe",
+      
     },
   };
 
