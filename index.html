@@ -74,7 +74,8 @@
   /* ---------- Gate ---------- */
   #gate { transition: transform 1.4s cubic-bezier(0.65, 0, 0.35, 1); }
   #gate.opened { transform: translateY(-100%); }
-  .gate-fade { animation: gateFade 1.6s ease-out both; }
+  .gate-fade { animation: gateFade 1.6s ease-out both; animation-play-state: paused; }
+  body.assets-loaded .gate-fade { animation-play-state: running; }
   @keyframes gateFade { 0% { opacity: 0; transform: translateY(14px); } 100% { opacity: 1; transform: translateY(0); } }
 
   /* ---------- Varied scroll-reveal transitions ---------- */
@@ -102,7 +103,9 @@
   .reveal-base.in-view .patra-line { stroke-dashoffset: 0; }
   .gate-fade .patra-line {
     animation: drawLine 1.8s ease-out 0.5s forwards;
+    animation-play-state: paused;
   }
+  body.assets-loaded .gate-fade .patra-line { animation-play-state: running; }
   @keyframes drawLine { from { stroke-dashoffset: 260; } to { stroke-dashoffset: 0; } }
 
   /* ---------- RSVP messages / list ---------- */
@@ -201,19 +204,19 @@
   <svg class="shape shape-pulse-slow top-1/3 left-1/4 w-72 h-72 text-gold-500/10" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="48" stroke="currentColor" stroke-width="0.75"/></svg>
 
   <div class="relative text-center gate-fade">
-    <p class="font-sans text-[11px] tracking-[0.45em] text-gold-400 uppercase mb-5">Upacara Adat Bali</p>
+    <p class="font-sans text-xs md:text-sm tracking-[0.45em] text-gold-400 uppercase mb-5">Undangan Mepandes</p>
 
+    
+
+    <h1 class="font-script text-5xl md:text-7xl text-cream-100 leading-none mb-2 cfg-person-nickname">Dea Anggarastya</h1>
     <svg class="patra mx-auto mb-4 opacity-70" viewBox="0 0 220 34" fill="none">
       <path class="patra-line" d="M2 17c14-16 28 16 42 0s28-16 42 0 28 16 42 0 28-16 42 0 28 16 42 0" stroke="#C7A55C" stroke-width="1.2"/>
       <circle cx="110" cy="17" r="3" fill="#C7A55C"/>
     </svg>
 
-    <h1 class="font-script text-7xl md:text-8xl text-cream-100 leading-none mb-2 cfg-person-nickname">Ayu Kirana</h1>
-    <p class="font-serif italic text-blush-300 text-lg md:text-xl mb-6">Undangan Metatah</p>
-
-    <div class="mb-8 max-w-xs mx-auto">
-      <p class="font-sans text-xs md:text-sm tracking-wide text-cream-200/90 leading-relaxed">Kepada Yth. Bapak/Ibu/Saudara/i</p>
-      <p id="gate-guest-name" class="font-script text-3xl md:text-4xl text-gold-400 mt-2 leading-tight"></p>
+    <div class="mb-4 max-w-xs mx-auto">
+      <p class="font-sans text-md md:text-lg tracking-wide text-cream-200/90 leading-relaxed">Kepada Yth. Bapak/Ibu/Saudara/i</p>
+      <p id="gate-guest-name" class="font-script text-3xl md:text-4xl text-gold-400 mt-4 leading-tight"></p>
     </div>
 
     <button id="open-btn" class="group mx-auto flex flex-col items-center gap-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 rounded-full p-2">
@@ -223,7 +226,7 @@
           <path d="M3 6.5 12 13l9-6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </span>
-      <span class="font-sans text-[11px] tracking-[0.3em] uppercase text-cream-200/80">Ketuk untuk membuka</span>
+      <span class="font-sans text-xs md:text-sm tracking-[0.3em] uppercase text-cream-200/80 mt-4">Ketuk tombol diatas untuk membuka</span>
     </button>
   </div>
 </div>
@@ -238,15 +241,12 @@
     <svg class="shape shape-pulse-slow top-1/3 right-4 w-16 h-16 text-gold-500/20" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="30" stroke="currentColor" stroke-width="1.5"/></svg>
     <svg class="shape shape-spin-rev bottom-1/4 left-10 w-20 h-20 text-maroon-800/10" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="36" stroke="currentColor" stroke-width="1" stroke-dasharray="3 5"/></svg>
 
-    <p id="greeting-line" class="reveal-base reveal-up font-serif italic text-maroon-600 text-base md:text-lg mb-8 max-w-md" data-delay="0">
-      Anda telah diundang dalam prosesi metatah suci
-    </p>
 
-    <p class="reveal-base reveal-fade font-sans text-[11px] tracking-[0.4em] uppercase text-gold-600 mb-4" data-delay="80">Om Swastyastu</p>
+    <p class="reveal-base reveal-fade font-script text-2xl text-maroon-900 tracking-[0.2em] uppercase mb-4" data-delay="80">Om Swastyastu</p>
 
-    <p class="reveal-base reveal-up font-serif text-maroon-800 max-w-lg leading-relaxed mb-8" data-delay="160">
+    <p class="reveal-base reveal-up font-serif text-md md:text-lg text-maroon-800 max-w-lg leading-relaxed mb-8" data-delay="160">
       Dengan penuh syukur ke hadapan Ida Sang Hyang Widhi Wasa, kami sekeluarga
-      bermaksud menyelenggarakan upacara Mesangih / Metatah bagi putri kami.
+      bermaksud menyelenggarakan upacara Mepandes / Metatah bagi putri kami.
       Kami mengundang Bapak/Ibu/Saudara/i untuk berkenan hadir memberikan doa restu.
     </p>
 
@@ -255,31 +255,31 @@
       <circle cx="110" cy="17" r="3" fill="#B08D4F"/>
     </svg>
 
-    <h2 class="reveal-base reveal-scale font-script text-6xl md:text-8xl text-maroon-900 mb-3 cfg-person-nickname" data-delay="260">Ayu Kirana</h2>
-    <p class="reveal-base reveal-up font-sans text-sm tracking-wide text-maroon-600 mb-10" data-delay="320">
-      Putri dari <span class="cfg-parents">I Wayan Sudiarta &amp; Ni Ketut Sri Wahyuni</span>
+    <h2 class="reveal-base reveal-scale font-script text-5xl md:text-7xl text-maroon-600 mb-3 cfg-person-nickname" data-delay="260">Dea Anggarastya</h2>
+    <p class="reveal-base reveal-up font-sans text-lg md:text-xl tracking-wide text-maroon-600 mb-10" data-delay="320">
+      <!-- Putri dari <span class="cfg-parents">I Wayan Sutarma &amp; Ni Made Sri Wiyanthi</span> -->
     </p>
 
     <div class="reveal-base reveal-left inline-flex items-center gap-3 border border-gold-500/50 rounded-full px-6 py-3 mb-10" data-delay="380">
-      <span class="font-sans text-xs tracking-[0.2em] uppercase text-maroon-800 cfg-event-date">Minggu, 16 Agustus 2026</span>
+      <span class="font-sans text-xs tracking-[0.2em] uppercase text-maroon-800 cfg-event-date">Selasa, 1 September 2026</span>
     </div>
 
     <!-- Countdown -->
-    <div class="reveal-base reveal-right grid grid-cols-4 gap-3 md:gap-5" data-delay="440">
-      <div class="bg-cream-200/70 border border-gold-500/30 rounded-xl px-4 py-3 md:px-6 md:py-4">
-        <p id="cd-days" class="font-serif text-2xl md:text-3xl text-maroon-900">00</p>
+    <div class="reveal-base reveal-right flex items-start justify-center" data-delay="440">
+      <div class="px-4 md:px-6 text-center">
+        <p id="cd-days" class="font-serif text-3xl md:text-4xl text-maroon-900">00</p>
         <p class="font-sans text-[9px] tracking-[0.2em] uppercase text-maroon-700 mt-1">Hari</p>
       </div>
-      <div class="bg-cream-200/70 border border-gold-500/30 rounded-xl px-4 py-3 md:px-6 md:py-4">
-        <p id="cd-hours" class="font-serif text-2xl md:text-3xl text-maroon-900">00</p>
+      <div class="px-4 md:px-6 text-center border-l border-gold-500/30">
+        <p id="cd-hours" class="font-serif text-3xl md:text-4xl text-maroon-900">00</p>
         <p class="font-sans text-[9px] tracking-[0.2em] uppercase text-maroon-700 mt-1">Jam</p>
       </div>
-      <div class="bg-cream-200/70 border border-gold-500/30 rounded-xl px-4 py-3 md:px-6 md:py-4">
-        <p id="cd-minutes" class="font-serif text-2xl md:text-3xl text-maroon-900">00</p>
+      <div class="px-4 md:px-6 text-center border-l border-gold-500/30">
+        <p id="cd-minutes" class="font-serif text-3xl md:text-4xl text-maroon-900">00</p>
         <p class="font-sans text-[9px] tracking-[0.2em] uppercase text-maroon-700 mt-1">Menit</p>
       </div>
-      <div class="bg-cream-200/70 border border-gold-500/30 rounded-xl px-4 py-3 md:px-6 md:py-4">
-        <p id="cd-seconds" class="font-serif text-2xl md:text-3xl text-maroon-900">00</p>
+      <div class="px-4 md:px-6 text-center border-l border-gold-500/30">
+        <p id="cd-seconds" class="font-serif text-3xl md:text-4xl text-maroon-900">00</p>
         <p class="font-sans text-[9px] tracking-[0.2em] uppercase text-maroon-700 mt-1">Detik</p>
       </div>
     </div>
@@ -296,14 +296,14 @@
     <svg class="shape shape-pulse top-6 left-6 w-16 h-16 text-gold-400/15" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="30" stroke="currentColor" stroke-width="1"/></svg>
 
     <div class="max-w-2xl mx-auto text-center relative">
-      <p class="reveal-base reveal-scale font-script text-4xl md:text-5xl text-gold-400 mb-8">Makna Metatah</p>
+      <p class="reveal-base reveal-scale font-script text-4xl md:text-5xl text-gold-400 mb-8 -rotate-1 inline-block">Makna Mepandes</p>
       <svg class="reveal-base reveal-fade patra mb-8 opacity-60" data-delay="120" viewBox="0 0 220 34" fill="none">
         <path class="patra-line" d="M2 17c14-16 28 16 42 0s28-16 42 0 28 16 42 0 28-16 42 0 28 16 42 0" stroke="#C7A55C" stroke-width="1.2"/>
       </svg>
-      <p class="reveal-base reveal-up font-serif italic text-lg md:text-xl leading-loose text-cream-200" data-delay="200">
+      <p class="reveal-base reveal-up font-serif italic text-md md:text-lg leading-loose text-cream-200" data-delay="200">
         Enam mata pisau tak kasat mata bersemayam dalam diri manusia —
         nafsu, tamak, angkara, mabuk kuasa, khilaf, dan iri hati.
-        Melalui metatah, keenamnya diruncingkan menjadi enam gigi yang diratakan,
+        Melalui mepandes, keenamnya diruncingkan menjadi enam gigi yang diratakan,
         sebagai simbol kesediaan menaklukkan Sad Ripu dan melangkah menuju
         kedewasaan yang hening.
       </p>
@@ -316,21 +316,24 @@
     <svg class="shape shape-spin bottom-0 -right-12 w-40 h-40 text-blush-300/20" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="46" stroke="currentColor" stroke-width="1" stroke-dasharray="5 5"/></svg>
     <svg class="shape shape-float-slow top-1/2 right-4 w-16 h-16 text-blush-300/25" viewBox="0 0 32 32" fill="none"><path d="M16 2c3 5 3 9 0 14-3-5-3-9 0-14Z" fill="currentColor"/><path d="M16 30c-3-5-3-9 0-14 3 5 3 9 0 14Z" fill="currentColor"/><path d="M2 16c5-3 9-3 14 0-5 3-9 3-14 0Z" fill="currentColor"/><path d="M30 16c-5 3-9 3-14 0 5-3 9-3 14 0Z" fill="currentColor"/><circle cx="16" cy="16" r="3" fill="currentColor"/></svg>
 
-    <div class="max-w-md mx-auto text-center relative">
-      <p class="reveal-base reveal-down font-script text-4xl md:text-5xl text-maroon-900 mb-2">Yang Menjalani Upacara</p>
-      <p class="reveal-base reveal-fade font-sans text-xs tracking-[0.3em] uppercase text-gold-600 mb-12" data-delay="100">Sang Pinunas Restu</p>
+    <div class="max-w-lg mx-auto text-center relative">
+      <p class="reveal-base reveal-down font-script text-4xl md:text-5xl mb-2 -rotate-1 inline-block" style="color:#8C1D1D">Yang Menjalani Upacara</p>
+      
 
-      <div class="reveal-base reveal-scale bg-cream-200 rounded-2xl border border-gold-500/30 px-8 py-12" data-delay="180">
-        <div class="w-28 h-28 mx-auto rounded-full bg-maroon-800/10 border border-gold-500/40 flex items-center justify-center mb-6">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" class="text-maroon-800/50">
-            <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.3"/>
-            <path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-          </svg>
+      <div class="reveal-base reveal-scale px-8 py-4" data-delay="180">
+        <div class="relative w-54 mx-auto mb-6" style="aspect-ratio: 920 / 1024;">
+          <div class="absolute inset-0 w-full h-full bg-cream-300" style="clip-path: ellipse(37% 46% at 51% 54%);"></div>
+          <img src="profile-picture.jpeg" alt="Foto Ni Ketut Dea Anggarastya Shinta Devi"
+               class="absolute inset-0 w-full h-full object-cover"
+               style="clip-path: ellipse(37% 46% at 51% 54%);"
+               onerror="this.style.display='none'">
+          <img src="bingkai-pita-maroon.png" alt=""
+               class="absolute inset-0 w-full h-full object-contain pointer-events-none select-none" aria-hidden="true">
         </div>
-        <h3 class="font-script text-5xl text-maroon-900 mb-3 cfg-person-full">Ni Made Ayu Kirana</h3>
-        <p class="font-serif text-maroon-700 leading-relaxed mb-6">
-          <span class="cfg-person-desc">Putri kedua dari</span><br>
-          <span class="cfg-parents">I Wayan Sudiarta &amp; Ni Ketut Sri Wahyuni</span>
+        <h3 class="font-script text-3xl md:text-4xl text-maroon-900 mb-3 cfg-person-full">Ni Ketut Dea Anggarastya Shinta Devi</h3>
+        <p class="font-serif text-md md:text-lg text-maroon-700 leading-relaxed mb-6">
+          <span class="cfg-person-desc">Putri ke-empat dari</span><br>
+          <span class="cfg-parents">I Wayan Sutarma &amp; Ni Made Sri Wiyanthi</span>
         </p>
 
         <a id="instagram-link" href="https://instagram.com" target="_blank" rel="noopener"
@@ -340,7 +343,7 @@
             <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.5"/>
             <circle cx="17.2" cy="6.8" r="1" fill="currentColor"/>
           </svg>
-          <span class="cfg-instagram-handle">@ayukirana</span>
+          <span class="cfg-instagram-handle">@deanggrstya</span>
         </a>
       </div>
     </div>
@@ -352,51 +355,45 @@
     <svg class="shape shape-spin-rev bottom-0 -left-10 w-36 h-36 text-maroon-800/10" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="44" stroke="currentColor" stroke-width="1" stroke-dasharray="3 6"/></svg>
     <svg class="shape shape-pulse-slow top-1/2 right-6 w-16 h-16 text-gold-500/15" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="50" r="28" stroke="currentColor" stroke-width="1.2"/></svg>
 
-    <div class="max-w-3xl mx-auto text-center relative">
-      <p class="reveal-base reveal-up font-script text-4xl md:text-5xl text-maroon-900 mb-2">Rangkaian Acara</p>
-      <p class="reveal-base reveal-fade font-sans text-xs tracking-[0.3em] uppercase text-gold-600 mb-14 cfg-event-date" data-delay="100">Minggu, 16 Agustus 2026</p>
+    <div class="max-w-5xl mx-auto text-center relative">
+      <div class="reveal-base reveal-scale mb-2" data-delay="100">
+        <p class="font-script text-4xl md:text-5xl leading-tight mb-6 -rotate-3 inline-block" style="color:#8C1D1D">
+          Save The Date
+        </p>
 
-      <div class="grid md:grid-cols-2 gap-6 text-center">
-        <div class="reveal-base reveal-left bg-cream-100 rounded-2xl border border-gold-500/30 p-8" data-delay="160">
-          <p class="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-600 mb-3 cfg-ceremony-label">Prosesi Sakral</p>
-          <h4 class="font-serif text-xl font-medium text-maroon-900 mb-4 cfg-ceremony-title">Upacara Mesangih</h4>
-          <ul class="font-serif text-maroon-700 space-y-2 text-sm mb-6">
-            <li class="cfg-ceremony-time">Pukul 08.00 WITA — selesai</li>
-            <li class="cfg-ceremony-venue">Jro / Merajan Keluarga Sudiarta</li>
-            <li class="cfg-ceremony-address">Jl. Tukad Yeh Aya No. 21, Denpasar</li>
-          </ul>
-
-          <div class="rounded-xl overflow-hidden border border-gold-500/30 shadow-sm">
-            <iframe id="map-embed-ceremony" src="https://www.google.com/maps?q=Denpasar,Bali&output=embed"
-              width="100%" height="200" style="border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <div class="max-w-lg mx-auto -rotate-3">
+          <div id="save-the-date-strip"
+               class="grid grid-cols-5"
+               style="border-color:#8C1D1D">
+            <!-- filled in by renderSaveTheDate() from CONFIG.eventDateISO -->
           </div>
-          <a id="map-link-btn-ceremony" href="https://maps.google.com/?q=Denpasar,Bali" target="_blank" rel="noopener"
-             class="inline-flex items-center gap-2 mt-4 font-sans text-[10px] tracking-[0.2em] uppercase
-                    text-maroon-800 border border-gold-500/40 rounded-full px-4 py-2 hover:bg-maroon-900 hover:text-cream-100 transition-colors">
-            Buka di Google Maps
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
         </div>
-        <div class="reveal-base reveal-right bg-cream-100 rounded-2xl border border-gold-500/30 p-8" data-delay="220">
-          <p class="font-sans text-[11px] tracking-[0.3em] uppercase text-gold-600 mb-3 cfg-reception-label">Ramah Tamah</p>
-          <h4 class="font-serif text-xl font-medium text-maroon-900 mb-4 cfg-reception-title">Syukuran &amp; Santap Bersama</h4>
-          <ul class="font-serif text-maroon-700 space-y-2 text-sm mb-6">
-            <li class="cfg-reception-time">Pukul 11.00 — 14.00 WITA</li>
-            <li class="cfg-reception-venue">Bale Banjar Sudiarta, Denpasar</li>
-            <li class="cfg-reception-dresscode">Busana adat madya</li>
-          </ul>
+      </div>
 
-          <div class="rounded-xl overflow-hidden border border-gold-500/30 shadow-sm">
-            <iframe id="map-embed-reception" src="https://www.google.com/maps?q=Denpasar,Bali&output=embed"
-              width="100%" height="200" style="border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-          </div>
-          <a id="map-link-btn-reception" href="https://maps.google.com/?q=Denpasar,Bali" target="_blank" rel="noopener"
-             class="inline-flex items-center gap-2 mt-4 font-sans text-[10px] tracking-[0.2em] uppercase
-                    text-maroon-800 border border-gold-500/40 rounded-full px-4 py-2 hover:bg-maroon-900 hover:text-cream-100 transition-colors">
-            Buka di Google Maps
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-        </div>
+      <!-- hand-drawn connector — ties the date strip directly to the event details below -->
+      <svg class="reveal-base reveal-fade mx-auto" data-delay="160" width="36" height="52" viewBox="0 0 36 52" fill="none" aria-hidden="true">
+        <path d="M18 2 C 18 14 9 15 18 26 C 27 37 9 38 18 50" stroke="#8C1D1D" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+
+      <div class="reveal-base reveal-up" data-delay="220">
+        <p class="font-script text-4xl md:text-5xl mb-3 rotate-1 inline-block cfg-event-title" style="color:#8C1D1D">Resepsi</p>
+        <p class="font-serif text-lg md:text-xl font-semibold text-maroon-900 cfg-event-date">Selasa, 1 September 2026</p>
+        <p class="font-serif text-lg md:text-xl font-semibold text-maroon-900 cfg-event-time">Pukul 17.00 WITA — Selesai</p>
+        <p class="font-serif text-lg md:text-xl font-semibold text-maroon-900 cfg-event-venue">
+          <!-- <span class="">TBD</span> -->
+        </p>
+      </div>
+
+      <!-- shown automatically once CONFIG.event.venue is filled in (see applyConfig) -->
+      <div id="acara-map-wrap" class="hidden mt-5 max-w-sm mx-auto transition-opacity duration-500">
+        <!-- <iframe  id="map-embed-event" class="w-full" width="100%" height="220" style="border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe> -->
+        <iframe src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3942.518127115592!2d115.17774577501642!3d-8.831256891222383!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zOMKwNDknNTIuNSJTIDExNcKwMTAnNDkuMiJF!5e0!3m2!1sen!2sid!4v1785409822757!5m2!1sen!2sid" id="map-embed-event" class="w-full" width="100%" height="220" style="border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <a id="map-link-btn-event" href="#" target="_blank" rel="noopener"
+           class="inline-flex items-center justify-center gap-2 mt-6 w-full font-serif text-lg tracking-[0.05em] uppercase
+                  bg-maroon-900 text-cream-200 rounded-full py-3.5 hover:bg-maroon-800 transition-colors">
+          Buka di Google Maps
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
       </div>
     </div>
   </section>
@@ -407,22 +404,22 @@
     <svg class="shape shape-float bottom-10 right-6 w-24 h-24 text-blush-300/20" viewBox="0 0 32 32" fill="none"><path d="M16 2c3 5 3 9 0 14-3-5-3-9 0-14Z" fill="currentColor"/><path d="M16 30c-3-5-3-9 0-14 3 5 3 9 0 14Z" fill="currentColor"/><path d="M2 16c5-3 9-3 14 0-5 3-9 3-14 0Z" fill="currentColor"/><path d="M30 16c-5 3-9 3-14 0 5-3 9-3 14 0Z" fill="currentColor"/><circle cx="16" cy="16" r="3" fill="currentColor"/></svg>
     <svg class="shape shape-spin top-1/3 right-10 w-16 h-16 text-gold-400/20" viewBox="0 0 32 32" fill="none"><path d="M16 2c3 5 3 9 0 14-3-5-3-9 0-14Z" fill="currentColor"/><path d="M16 30c-3-5-3-9 0-14 3 5 3 9 0 14Z" fill="currentColor"/><path d="M2 16c5-3 9-3 14 0-5 3-9 3-14 0Z" fill="currentColor"/><path d="M30 16c-5 3-9 3-14 0 5-3 9-3 14 0Z" fill="currentColor"/><circle cx="16" cy="16" r="3" fill="currentColor"/></svg>
 
-    <div class="max-w-lg mx-auto text-center relative">
-      <p class="reveal-base reveal-up font-script text-4xl md:text-5xl text-maroon-900 mb-2">Konfirmasi Kehadiran</p>
-      <p class="reveal-base reveal-fade font-serif text-maroon-700 mb-10" data-delay="100">
+    <div class="max-w-xl mx-auto text-center relative">
+      <p class="reveal-base reveal-up font-script text-4xl md:text-5xl mb-2 -rotate-1 inline-block" style="color:#8C1D1D">Konfirmasi Kehadiran</p>
+      <p class="reveal-base reveal-fade text-md md:text-lg font-serif text-maroon-700 mb-10" data-delay="100">
         Mohon konfirmasi kehadiran Bapak/Ibu/Saudara/i sebelum tanggal <span class="cfg-rsvp-deadline">9 Agustus 2026</span>.
       </p>
 
       <form id="rsvp-form" novalidate class="reveal-base reveal-scale text-left space-y-5" data-delay="180">
         <div>
-          <label for="nama" class="block font-sans text-[11px] tracking-[0.2em] uppercase text-maroon-800 mb-2">Nama Lengkap</label>
+          <label for="nama" class="block font-sans text-xs md:text-sm tracking-[0.2em] uppercase text-maroon-800 mb-2">Nama Lengkap</label>
           <input id="nama" type="text" placeholder="Nama Anda"
             class="w-full bg-cream-200/60 border border-gold-500/30 rounded-lg px-4 py-3 font-serif
                    text-maroon-900 placeholder-maroon-700/40 focus:outline-none focus:ring-2 focus:ring-gold-400">
         </div>
 
         <div>
-          <label for="konfirmasi" class="block font-sans text-[11px] tracking-[0.2em] uppercase text-maroon-800 mb-2">Konfirmasi Kehadiran</label>
+          <label for="konfirmasi" class="block font-sans text-xs md:text-sm tracking-[0.2em] uppercase text-maroon-800 mb-2">Konfirmasi Kehadiran</label>
           <select id="konfirmasi"
             class="w-full bg-cream-200/60 border border-gold-500/30 rounded-lg px-4 py-3 font-serif
                    text-maroon-900 focus:outline-none focus:ring-2 focus:ring-gold-400">
@@ -433,14 +430,14 @@
         </div>
 
         <div>
-          <label for="pesan" class="block font-sans text-[11px] tracking-[0.2em] uppercase text-maroon-800 mb-2">Doa &amp; Ucapan</label>
+          <label for="pesan" class="block font-sans text-xs md:text-sm tracking-[0.2em] uppercase text-maroon-800 mb-2">Doa &amp; Ucapan</label>
           <textarea id="pesan" rows="3" placeholder="Tuliskan doa restu Anda"
             class="w-full bg-cream-200/60 border border-gold-500/30 rounded-lg px-4 py-3 font-serif
                    text-maroon-900 placeholder-maroon-700/40 focus:outline-none focus:ring-2 focus:ring-gold-400"></textarea>
         </div>
 
         <button type="submit"
-          class="w-full bg-maroon-900 text-cream-100 font-sans text-xs tracking-[0.25em] uppercase
+          class="w-full bg-maroon-900 text-cream-100 font-sans text-xs md:text-sm tracking-[0.25em] uppercase
                  rounded-full py-4 hover:bg-maroon-800 transition-colors">
           Kirim Konfirmasi
         </button>
@@ -471,31 +468,31 @@
     <svg class="shape shape-float-slow bottom-1/3 left-1/4 w-16 h-16 text-blush-300/20" viewBox="0 0 32 32" fill="none"><path d="M16 2c3 5 3 9 0 14-3-5-3-9 0-14Z" fill="currentColor"/><path d="M16 30c-3-5-3-9 0-14 3 5 3 9 0 14Z" fill="currentColor"/><path d="M2 16c5-3 9-3 14 0-5 3-9 3-14 0Z" fill="currentColor"/><path d="M30 16c-5 3-9 3-14 0 5-3 9-3 14 0Z" fill="currentColor"/><circle cx="16" cy="16" r="3" fill="currentColor"/></svg>
 
     <div class="max-w-lg mx-auto text-center relative">
-      <p class="reveal-base reveal-scale font-script text-4xl md:text-5xl text-gold-400 mb-6">Tanda Kasih</p>
-      <p class="reveal-base reveal-up font-serif text-cream-200 leading-relaxed mb-10" data-delay="120">
+      <p class="reveal-base reveal-scale font-script text-4xl md:text-5xl text-gold-400 mb-6 -rotate-1 inline-block">Tanda Kasih</p>
+      <p class="reveal-base reveal-up text-md md:text-lg font-serif text-cream-200 leading-relaxed mb-10" data-delay="120">
         Kehadiran serta doa restu Bapak/Ibu/Saudara/i merupakan hadiah yang
         paling berarti bagi kami. Namun apabila berkenan memberikan tanda kasih,
         dapat disalurkan melalui:
       </p>
 
-      <div class="space-y-4 text-left">
-        <div class="reveal-base reveal-left bg-maroon-800/60 border border-gold-500/30 rounded-xl px-6 py-5 flex items-center justify-between gap-4" data-delay="180">
+      <div class="divide-y divide-gold-500/25 text-left">
+        <div class="reveal-base reveal-left py-5 flex items-center justify-between gap-4" data-delay="180">
           <div>
-            <p class="font-sans text-[10px] tracking-[0.2em] uppercase text-gold-400 mb-1">Transfer Bank — <span class="cfg-bank-name">BCA</span></p>
-            <p class="font-serif text-cream-100">a.n. <span class="cfg-bank-account-name">Ni Ketut Sri Wahyuni</span></p>
-            <p class="font-serif tracking-wider text-cream-100 cfg-bank-account-number">1234567890</p>
+            <p class="font-sans text-xs md:text-sm tracking-[0.2em] uppercase text-gold-400 mb-1">Transfer Bank — <span class="cfg-bank-name">BCA</span></p>
+            <p class="font-serif text-lg md:text-xl text-cream-100">a.n. <span class="cfg-bank-account-name">Dea Anggarastya</span></p>
+            <p class="font-serif text-lg md:text-xl tracking-wider text-cream-100 cfg-bank-account-number">7721294904</p>
           </div>
-          <button id="copy-bank-btn" data-copy="1234567890"
+          <button id="copy-bank-btn" data-copy="7721294904"
             class="copy-btn shrink-0 font-sans text-[10px] tracking-[0.15em] uppercase border border-gold-400
                    text-gold-400 rounded-full px-4 py-2 hover:bg-gold-400 hover:text-maroon-900 transition-colors">
             Salin
           </button>
         </div>
 
-        <div class="reveal-base reveal-right bg-maroon-800/60 border border-gold-500/30 rounded-xl px-6 py-5 flex items-center justify-between gap-4" data-delay="240">
+        <div class="reveal-base reveal-right py-5 flex items-center justify-between gap-4" data-delay="240">
           <div>
-            <p class="font-sans text-[10px] tracking-[0.2em] uppercase text-gold-400 mb-1">Alamat Kado</p>
-            <p class="font-serif text-cream-100 cfg-gift-address">Jl. Tukad Yeh Aya No. 21, Denpasar, Bali</p>
+            <p class="font-sans ttext-xs md:text-sm tracking-[0.2em] uppercase text-gold-400 mb-1">Alamat Kado</p>
+            <p class="font-serif text-lg md:text-xl text-cream-100 cfg-gift-address">Jl. Blablablabla, Denpasar, Bali</p>
           </div>
           <button id="copy-address-btn" data-copy="Jl. Tukad Yeh Aya No. 21, Denpasar, Bali"
             class="copy-btn shrink-0 font-sans text-[10px] tracking-[0.15em] uppercase border border-gold-400
@@ -512,8 +509,8 @@
     <svg class="patra mb-6 opacity-60 reveal-base reveal-fade" data-delay="0" viewBox="0 0 220 34" fill="none">
       <path class="patra-line" d="M2 17c14-16 28 16 42 0s28-16 42 0 28 16 42 0 28-16 42 0 28 16 42 0" stroke="#B08D4F" stroke-width="1.2"/>
     </svg>
-    <p class="reveal-base reveal-up font-serif italic text-maroon-700 mb-2" data-delay="140">Terima kasih atas doa restu Bapak/Ibu/Saudara/i</p>
-    <p class="reveal-base reveal-scale font-script text-3xl text-maroon-900" data-delay="240">Om Shanti Shanti Shanti Om</p>
+    <p class="reveal-base reveal-up text-md md:text-lg font-serif italic text-maroon-700 mb-2" data-delay="140">Terima kasih atas doa restu Bapak/Ibu/Saudara/i</p>
+    <p class="reveal-base reveal-scale font-script text-2xl text-maroon-900" data-delay="240">Om Shanti Shanti Shanti Om</p>
   </footer>
 
 </main>
@@ -521,12 +518,12 @@
 <!-- ============ RSVP CONFIRMATION MODAL ============ -->
 <div id="rsvp-modal" class="hidden fixed inset-0 z-[80] flex items-center justify-center px-6">
   <div id="rsvp-modal-backdrop" class="absolute inset-0 bg-maroon-950/70 backdrop-blur-sm"></div>
-  <div id="rsvp-modal-card" class="relative bg-cream-100 rounded-2xl border border-gold-500/30 max-w-sm w-full px-8 py-10 text-center shadow-2xl transform scale-95 opacity-0">
+  <div id="rsvp-modal-card" class="relative bg-cream-100 rounded-2xl max-w-sm w-full px-8 py-10 text-center transform scale-95 opacity-0">
     <svg class="patra mb-5 mx-auto opacity-70" viewBox="0 0 220 34" fill="none">
       <path d="M2 17c14-16 28 16 42 0s28-16 42 0 28 16 42 0 28-16 42 0 28 16 42 0" stroke="#B08D4F" stroke-width="1.2"/>
       <circle cx="110" cy="17" r="3" fill="#B08D4F"/>
     </svg>
-    <p id="rsvp-modal-text" class="font-serif italic text-maroon-800 leading-relaxed mb-7"></p>
+    <p id="rsvp-modal-text" class="font-serif italic text-md md:text-lg text-maroon-800 leading-relaxed mb-7"></p>
     <button id="rsvp-modal-close"
       class="font-sans text-xs tracking-[0.25em] uppercase bg-maroon-900 text-cream-100 rounded-full px-6 py-3 hover:bg-maroon-800 transition-colors">
       Tutup
@@ -551,7 +548,7 @@
     </svg>
     <div id="vinyl" class="vinyl absolute inset-0 rounded-full" style="background:repeating-radial-gradient(circle at center, #2a2a2a 0, #2a2a2a 2px, #1a1a1a 2px, #1a1a1a 4px);">
       <div class="absolute inset-0 m-auto w-6 h-6 rounded-full bg-[#C7A55C] flex items-center justify-center border-2 border-[#1a1a1a]">
-        <span class="font-script text-[10px] text-white leading-none">A K</span>
+        <span class="font-script text-[10px] text-white leading-none">D A</span>
       </div>
     </div>
     <span class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
@@ -576,49 +573,37 @@
   ========================================================================= */
   const CONFIG = {
     // The person undergoing the ceremony
-    personFullName: "Ni Made Ayu Kirana",     // full name shown on the person card
-    personNickname: "Ayu Kirana",             // short name shown on cover & hero (large script)
-    personDesc: "Putri kedua dari",           // relation label, e.g. "Putri kedua dari"
-    parents: "I Wayan Sudiarta & Ni Ketut Sri Wahyuni",
-    instagramHandle: "@ayukirana",
-    instagramUrl: "https://instagram.com/ayukirana",
+    personFullName: "Ni Ketut Dea Anggarastya Shinta Devi",     // full name shown on the person card
+    personNickname: "Dea Anggarastya",             // short name shown on cover & hero (large script)
+    personDesc: "Putri ke-empat dari",           // relation label, e.g. "Putri ke-empat dari"
+    parents: "I Wayan Sutarma & Ni Made Sri Wiyanthi",
+    instagramHandle: "@deanggrstya",
+    instagramUrl: "https://instagram.com/deanggrstya",
 
     // Main event date/time
-    eventDateDisplay: "Minggu, 16 Agustus 2026",  // shown as text on the page
-    eventDateISO: "2026-08-16T08:00:00+08:00",    // used to drive the countdown — keep in ISO format
+    eventDateDisplay: "Selasa, 1 September 2026",  // shown as text on the page
+    eventDateISO: "2026-09-01T17:00:00+08:00",    // used to drive the countdown — keep in ISO format
 
     // RSVP deadline (display text only)
-    rsvpDeadline: "9 Agustus 2026",
+    rsvpDeadline: "30 Agustus 2026",
 
-    // Sacred ceremony
-    ceremony: {
-      label: "Prosesi Sakral",
-      title: "Upacara Mesangih",
-      time: "Pukul 08.00 WITA — selesai",
-      venue: "Jro / Merajan Keluarga Sudiarta",
-      address: "Jl. Tukad Yeh Aya No. 21, Denpasar",
-      // Google Maps for THIS venue — paste your own embed URL and share link
-      mapEmbedUrl: "https://www.google.com/maps?q=Denpasar,Bali&output=embed",
-      mapLinkUrl: "https://maps.google.com/?q=Denpasar,Bali",
-    },
-
-    // Reception / open gathering
-    reception: {
-      label: "Ramah Tamah",
-      title: "Syukuran & Santap Bersama",
-      time: "Pukul 11.00 — 14.00 WITA",
-      venue: "Bale Banjar Sudiarta, Denpasar",
-      dresscode: "Busana adat madya",
-      // Google Maps for THIS venue — paste your own embed URL and share link
-      mapEmbedUrl: "https://www.google.com/maps?q=Denpasar,Bali&output=embed",
-      mapLinkUrl: "https://maps.google.com/?q=Denpasar,Bali",
+    // The one and only event — venue TBD for now. Once the venue is
+    // confirmed, fill in `venue` (anything other than "TBD") plus
+    // mapEmbedUrl/mapLinkUrl and the map + "Buka di Google Maps" button
+    // will appear automatically.
+    event: {
+      title: "Resepsi",
+      time: "Pukul 17.00 WITA — Selesai",
+      venue: "Jl. Tukad Yeh Aya No. 21, Denpasar, Bali",
+      // mapEmbedUrl: "https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3942.518127115592!2d115.17774577501642!3d-8.831256891222383!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zOMKwNDknNTIuNSJTIDExNcKwMTAnNDkuMiJF!5e0!3m2!1sen!2sid!4v1785409656479!5m2!1sen!2sid",
+      mapLinkUrl: "https://maps.app.goo.gl/zRn87s79FG3DKW359",
     },
 
     // Bank transfer for gifts
     bank: {
       bankName: "BCA",
-      accountName: "Ni Ketut Sri Wahyuni",
-      accountNumber: "1234567890",
+      accountName: "Dea Anggarastya",
+      accountNumber: "7721294904",
     },
     giftAddress: "Jl. Tukad Yeh Aya No. 21, Denpasar, Bali",
 
@@ -633,15 +618,69 @@
     // 'prod' -> RSVP form talks to the Netlify function at /api/rsvp, which
     //           keeps the real jsonbin.io master key server-side. Also hides
     //           the "Isi 20 Data Uji (Dev)" button.
-    env: "prod",
+    env: "dev",
 
     // Only used when env === 'dev'. Get a Master Key at
     // https://jsonbin.io/api-keys and create a bin with starting content {}.
     jsonbin: {
       // apiKey: "YOUR_JSONBIN_MASTER_KEY",
       // binId: "YOUR_JSONBIN_BIN_ID",
+      apiKey: "$2a$10$kq/Be0t/6nU/5rQZcjBanuaG821d5KC.0.u4hX8pJgqEnZolSlMni",
+      binId: "6a5a24a9f5f4af5e299c4ffe",
     },
   };
+
+  // ---------- "Save the Date" strip (prev day / event day / next day) ----------
+  // Works off calendar date parts only (never a JS Date's local getters) so the
+  // day-of-week shown can't drift depending on the visitor's own timezone.
+  const DAY_NAMES_ID = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+  function parseDateOnly(iso) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+    if (!m) return null;
+    return { y: +m[1], mo: +m[2], d: +m[3] };
+  }
+
+  function calendarDatePlusDays({ y, mo, d }, delta) {
+    const utc = new Date(Date.UTC(y, mo - 1, d + delta));
+    return { y: utc.getUTCFullYear(), mo: utc.getUTCMonth() + 1, d: utc.getUTCDate(), dow: utc.getUTCDay() };
+  }
+
+  function renderSaveTheDate(eventDateISO) {
+    const strip = document.getElementById('save-the-date-strip');
+    if (!strip) return;
+    const base = parseDateOnly(eventDateISO);
+    if (!base) return;
+
+    const days = [-2, -1, 0, 1, 2].map(delta => calendarDatePlusDays(base, delta));
+
+    strip.innerHTML = days.map((day, i) => {
+      const isEventDay = i === 2;
+      const dayName = DAY_NAMES_ID[day.dow];
+      const borderClass = i < 4 ? 'border-r-2' : '';
+      if (!isEventDay) {
+        return (
+          '<div class="' + borderClass + ' px-3 py-5 text-center" style="border-color:#8C1D1D">' +
+            '<p class="font-serif font-semibold text-sm md:text-lg text-maroon-900 mb-1">' + dayName + '</p>' +
+            '<p class="font-serif font-bold text-4xl md:text-5xl text-maroon-900">' + day.d + '</p>' +
+          '</div>'
+        );
+      }
+      return (
+        '<div class="' + borderClass + ' relative px-3 py-5 text-center" style="border-color:#8C1D1D">' +
+          '<p class="font-serif font-semibold text-sm md:text-lg text-maroon-900 mb-1">' + dayName + '</p>' +
+          '<span class="relative inline-block">' +
+            '<span class="font-serif font-bold text-4xl md:text-5xl text-maroon-900 relative z-10">' + day.d + '</span>' +
+            '<svg class="absolute pointer-events-none" style="top:-10px;left:-16px;width:calc(100% + 32px);height:calc(100% + 28px);" viewBox="0 0 60 56" fill="none" aria-hidden="true">' +
+              '<ellipse cx="30" cy="27" rx="26" ry="23" stroke="#8C1D1D" stroke-width="2" transform="rotate(-7 30 27)"/>' +
+              '<ellipse cx="31" cy="28" rx="24" ry="21" stroke="#8C1D1D" stroke-width="1.3" transform="rotate(5 31 28)"/>' +
+            '</svg>' +
+          '</span>' +
+          '<p class="font-serif font-bold text-sm md:text-base text-maroon-800 mt-1 -rotate-3">D-day!!</p>' +
+        '</div>'
+      );
+    }).join('');
+  }
 
   function applyConfig(cfg) {
     document.title = "Undangan Metatah — " + cfg.personNickname;
@@ -657,27 +696,23 @@
     document.querySelectorAll('.cfg-event-date').forEach(el => el.textContent = cfg.eventDateDisplay);
     document.querySelectorAll('.cfg-rsvp-deadline').forEach(el => el.textContent = cfg.rsvpDeadline);
 
-    document.querySelectorAll('.cfg-ceremony-label').forEach(el => el.textContent = cfg.ceremony.label);
-    document.querySelectorAll('.cfg-ceremony-title').forEach(el => el.textContent = cfg.ceremony.title);
-    document.querySelectorAll('.cfg-ceremony-time').forEach(el => el.textContent = cfg.ceremony.time);
-    document.querySelectorAll('.cfg-ceremony-venue').forEach(el => el.textContent = cfg.ceremony.venue);
-    document.querySelectorAll('.cfg-ceremony-address').forEach(el => el.textContent = cfg.ceremony.address);
+    document.querySelectorAll('.cfg-event-title').forEach(el => el.textContent = cfg.event.title);
+    document.querySelectorAll('.cfg-event-time').forEach(el => el.textContent = cfg.event.time);
+    document.querySelectorAll('.cfg-event-venue').forEach(el => el.textContent = cfg.event.venue);
 
-    document.querySelectorAll('.cfg-reception-label').forEach(el => el.textContent = cfg.reception.label);
-    document.querySelectorAll('.cfg-reception-title').forEach(el => el.textContent = cfg.reception.title);
-    document.querySelectorAll('.cfg-reception-time').forEach(el => el.textContent = cfg.reception.time);
-    document.querySelectorAll('.cfg-reception-venue').forEach(el => el.textContent = cfg.reception.venue);
-    document.querySelectorAll('.cfg-reception-dresscode').forEach(el => el.textContent = cfg.reception.dresscode);
-
-    const ceremonyMapEmbed = document.getElementById('map-embed-ceremony');
-    if (ceremonyMapEmbed) ceremonyMapEmbed.src = cfg.ceremony.mapEmbedUrl;
-    const ceremonyMapBtn = document.getElementById('map-link-btn-ceremony');
-    if (ceremonyMapBtn) ceremonyMapBtn.href = cfg.ceremony.mapLinkUrl;
-
-    const receptionMapEmbed = document.getElementById('map-embed-reception');
-    if (receptionMapEmbed) receptionMapEmbed.src = cfg.reception.mapEmbedUrl;
-    const receptionMapBtn = document.getElementById('map-link-btn-reception');
-    if (receptionMapBtn) receptionMapBtn.href = cfg.reception.mapLinkUrl;
+    // The map + "Buka di Google Maps" button only make sense once there's an
+    // actual venue — stay hidden while venue is still "TBD".
+    const acaraMapWrap = document.getElementById('acara-map-wrap');
+    const hasVenue = cfg.event.venue && cfg.event.venue.trim().toUpperCase() !== 'TBD';
+    if (acaraMapWrap) {
+      acaraMapWrap.classList.toggle('hidden', !hasVenue);
+      if (hasVenue) {
+        // const eventMapEmbed = document.getElementById('map-embed-event');
+        // if (eventMapEmbed) eventMapEmbed.src = cfg.event.mapEmbedUrl;
+        const eventMapBtn = document.getElementById('map-link-btn-event');
+        if (eventMapBtn) eventMapBtn.href = cfg.event.mapLinkUrl || '#';
+      }
+    }
 
     document.querySelectorAll('.cfg-bank-name').forEach(el => el.textContent = cfg.bank.bankName);
     document.querySelectorAll('.cfg-bank-account-name').forEach(el => el.textContent = cfg.bank.accountName);
@@ -690,6 +725,7 @@
     if (copyAddress) copyAddress.setAttribute('data-copy', cfg.giftAddress);
 
     startCountdown(cfg.eventDateISO);
+    renderSaveTheDate(cfg.eventDateISO);
     applyGuestName(cfg.defaultGuestName);
   }
 
@@ -905,7 +941,7 @@
   const RSVP_MESSAGES = {
     'Hadir': 'Ucapan dan konfirmasi kehadiran sudah kami terima, untuk kehadirannya kami ucapkan terima kasih.',
     'Tidak Hadir': 'Ucapan dan konfirmasi Anda sudah kami terima. Terima kasih atas kabarnya — doa restu Anda tetap sangat berarti bagi kami.',
-    'Masih Ragu': 'Ucapan dan konfirmasi Anda sudah kami terima. Terima kasih, kami tunggu kabar baik mengenai kehadiran Anda selanjutnya.',
+    'Masih Ragu': 'Ucapan dan konfirmasi Anda sudah kami terima. Terima kasih, kami tunggu kabar baik mengenai kehadiran Anda.',
   };
 
   function openRsvpModal(status) {
@@ -1151,7 +1187,7 @@
   // entry = { nama, pesan, konfirmasi, waktu } — raw (unescaped) text in, HTML-escaped here.
   function renderSubmission(entry, { prepend = true } = {}) {
     const card = document.createElement('div');
-    card.className = 'rsvp-item bg-cream-200/70 border border-gold-500/30 rounded-xl px-5 py-4';
+    card.className = 'rsvp-item border-b border-gold-500/25 px-1 py-4';
     const statusClasses = entry.konfirmasi === 'Hadir'
       ? 'text-maroon-900 bg-gold-400/30'
       : entry.konfirmasi === 'Tidak Hadir'
@@ -1164,11 +1200,11 @@
         avatarHTML(entry.nama) +
         '<div class="min-w-0 flex-1">' +
           '<div class="flex items-start justify-between gap-3 mb-2">' +
-            '<p class="font-serif font-medium text-maroon-900 truncate">' + namaSafe + '</p>' +
+            '<p class="font-serif text-lg md:text-xl text-maroon-900 truncate">' + namaSafe + '</p>' +
             '<span class="shrink-0 font-sans text-[10px] tracking-[0.15em] uppercase rounded-full px-3 py-1 ' + statusClasses + '">' + entry.konfirmasi + '</span>' +
           '</div>' +
-          (pesanSafe ? '<p class="font-serif text-sm text-maroon-700 italic mb-2">&ldquo;' + pesanSafe + '&rdquo;</p>' : '') +
-          '<p class="font-sans text-[10px] tracking-wide text-maroon-600">' + entry.waktu + '</p>' +
+          (pesanSafe ? '<p class="font-serif text-md md:text-lg text-maroon-700 italic mb-2">&ldquo;' + pesanSafe + '&rdquo;</p>' : '') +
+          '<p class="font-sans text-xs md:text-sm tracking-wide text-maroon-600">' + entry.waktu + '</p>' +
         '</div>' +
       '</div>';
     if (prepend) rsvpList.prepend(card); else rsvpList.appendChild(card);
@@ -1263,6 +1299,7 @@
   // resource stalls.
   function hideLoadingScreen() {
     const el = document.getElementById('loading-screen');
+    document.body.classList.add('assets-loaded');
     if (!el) return;
     el.classList.add('is-hidden');
     setTimeout(() => el.remove(), 700);
